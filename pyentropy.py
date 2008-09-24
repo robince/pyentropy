@@ -13,21 +13,6 @@
 #
 #    Copyright 2008 Robin Ince
 
-"""
-Entropy and Information Estimates
-=================================
-
- This module provides techniques for estimates of information theoretic 
- quantities.
-
-Classes
--------
-
-  DiscreteSystem :
-      Class to sample and hold probabilities of a discrete system
-
-"""
-
 __author__ = "Robin Ince"
 __version__ = "0.1"
 
