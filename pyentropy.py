@@ -15,6 +15,8 @@
 
 import numpy as np
 import os
+from tempfile import NamedTemporaryFile
+import subprocess
 
 class DiscreteSystem:
     """Class to hold probabilities and calculate entropies of 
@@ -210,6 +212,11 @@ class DiscreteSystem:
         ------
         self.H : dict
             Dictionary of computed values.
+
+        Notes
+        -----
+        - If the PT method is chosen with outputs 'HiX' or 'ChiX' no bias 
+          correction will be performed for these terms.
 
         """
         self.calc = calc
@@ -448,7 +455,6 @@ class DiscreteSystem:
         return I
                
 
-
 class SortedDiscreteSystem(DiscreteSystem):
     """Class to hold probabilities and calculate entropies of 
     a discrete stochastic system when the inputs are available already sorted.
@@ -672,32 +678,38 @@ def nsb_entropy(P, N, dim):
     """
     
     freqs = np.round(P*N)
-    fd = open('pynsb.txt', 'w')
+    tf = NamedTemporaryFile(mode='w',suffix='.txt')
 
     # write file header
-    fd.write("# type: scalar\n")
-    fd.write(str(dim) + "\n")
-    fd.write("# rows: 1\n")
-    fd.write("# columns: " + str(freqs.sum().astype(int)) + "\n")
+    tf.file.write("# type: scalar\n")
+    tf.file.write(str(dim) + "\n")
+    tf.file.write("# rows: 1\n")
+    tf.file.write("# columns: " + str(freqs.sum().astype(int)) + "\n")
 
     # write data
     for i in xrange(freqs.size):
-        fd.write(freqs[i]*(str(i)+" "))
-    fd.write("\n")
-    fd.close()
+        tf.file.write(freqs[i]*(str(i)+" "))
+    tf.file.write("\n")
+    tf.file.close()
 
     # run nsb-entropy application
-    os.system("./nsb-entropy -dpar -iuni -cY -s1 -e1 pynsb >> nsb-py.out")
+    subprocess.call(["nsb-entropy","-dpar","-iuni","-cY","-s1","-e1",tf.name[:-4]], 
+                    stdout=open(os.devnull),stderr=open(os.devnull))
 
     # read results
-    fd = open("pynsb_uni_num"+str(dim)+"_mf1f0_1_entr.txt")
+    dir, fname = os.path.split(tf.name)
+    out_fname = os.path.splitext(fname)[0]+"_uni_num"+str(dim)+"_mf1f0_1_entr.txt"
+    out_fname = os.path.join(dir,out_fname)
+    fd = open(out_fname,mode='r')
     results = fd.readlines()
     fd.close()
+    os.remove(out_fname)
 
     H = float(results[15].split(' ')[0])
     dH = float(results[20].split(' ')[0])
 
     return [H, dH]
+
 
 def dec2base(x, b, digits):
     """Convert decimal value to a row of values representing it in a 
