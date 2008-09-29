@@ -1,6 +1,6 @@
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
+#    the Free Software Foundation, either version 2 of the License, or
 #    (at your option) any later version.
 #
 #    This program is distributed in the hope that it will be useful,
@@ -12,9 +12,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2008 Robin Ince
-
-__author__ = "Robin Ince"
-__version__ = "0.1"
 
 import numpy as np
 import os
@@ -39,6 +36,8 @@ class DiscreteSystem:
     PXiY[X_m,X_n,Y_dim] :
         Conditional probability distributions for individual X compoenents.
         PXiY[i,j,k] = P(X_i==j | Y==k)
+    PiX[X_dim] :
+        Pind(X) = <Pind(X|y)>_y
 
     Methods
     -------
@@ -71,7 +70,6 @@ class DiscreteSystem:
             after another).
 
         """
-        #TODO: Add Chi? HindR
         self.X_dims = X_dims
         self.Y_dims = Y_dims
         self.X_n = X_dims[0]
@@ -119,7 +117,7 @@ class DiscreteSystem:
             else:
                 # make 1D
                 d_X = self.X.reshape(self.X.size)
-        if any([c in calc for c in ['HiXY','HXY']]):
+        if any([c in calc for c in ['HiX','HiXY','HXY']]):
             if self.Y_n > 1:
                 d_Y = decimalise(self.Y, self.Y_n, self.Y_m)
             else:
@@ -127,11 +125,11 @@ class DiscreteSystem:
                 d_Y = self.Y.reshape(self.Y.size)
 
         # unconditional probabilities
-        if 'HX' in calc:
+        if ('HX' in calc) or ('ChiX' in calc):
             self.PX = prob(d_X, self.X_dim, method=method)
-        if any([c in calc for c in ['HXY','HiXY','HY']]):
+        if any([c in calc for c in ['HXY','HiX','HiXY','HY']]):
             self.PY = prob(d_Y, self.Y_dim, method=method)
-        if 'HiX' in calc:
+        if 'SiHXi' in calc:
             for i in xrange(self.X_n):
                 self.PXi[:,i] = prob(self.X[i,:], self.X_m, method=method)
             
@@ -148,7 +146,7 @@ class DiscreteSystem:
                           'output : ' + str(i)
                     else:
                         self.PXY[:,i] = prob(oce, self.X_dim, method=method)
-                if ('HiXY' in calc) or ('HshXY' in calc):
+                if any([c in calc for c in ['HiX','HiXY','HshXY']]):
                     for j in xrange(self.X_n):
                         # output conditional ensemble for a single variable
                         oce = self.X[j,indx]
@@ -160,6 +158,13 @@ class DiscreteSystem:
                             # shuffle
                             np.random.shuffle(oce)
                             self.Xsh[j,indx] = oce
+        # Pind(X) = <Pind(X|Y)>_y
+        if ('HiX' in calc) or ('ChiX' in calc):
+            # average over Y
+            PiXi = np.dot(self.PXiY, self.PY)
+            # construct joint distribution
+            words = dec2base(np.atleast_2d(np.r_[0:self.X_dim]).T,self.X_m,self.X_n)
+            self.PiX = PiXi[words,np.r_[0:self.X_n]].prod(axis=1)
                             
         self.sampled = True
 
@@ -188,7 +193,7 @@ class DiscreteSystem:
         sampling : {'naive', 'kt', 'beta:x'}
             Sampling method to use. See docstring of sampling function for 
             further details
-        calc :  {'HX','HY','HXY','HiX','HiXY','HshXY'}
+        calc :  {'HX','HY','HXY','SiHXi','HiX','HiXY','HshXY'}
             List of entropies to compute.
 
         Other Parameters
@@ -218,13 +223,15 @@ class DiscreteSystem:
         if any([c in calc for c in ['HXY','HiXY','HY']]):
             # need Py for any conditional entropies
             self.PY = np.zeros(self.Y_dim)
-        if 'HX' in calc:
+        if ('HX' in calc) or ('ChiX' in calc):
             self.PX = np.zeros(self.X_dim)
+        if ('HiX' in calc) or ('ChiX' in calc):
+            self.PiX = np.zeros(self.X_dim)
         if 'HXY' in calc:
             self.PXY = np.zeros((self.X_dim,self.Y_dim))
-        if 'HiX' in calc:
+        if 'SiHXi' in calc:
             self.PXi = np.zeros((self.X_m,self.X_n))
-        if 'HiXY' in calc:
+        if ('HiXY' in calc) or ('HiX' in calc):
             self.PXiY = np.zeros((self.X_m,self.X_n,self.Y_dim))
         if 'HshXY' in calc:
             self.Xsh = np.zeros(self.X.shape,dtype=np.int)
@@ -270,13 +277,13 @@ class DiscreteSystem:
                     for y in xrange(self.Y_dim):
                         H += pt_corr(pt_bayescount(self.PXY[:,y], self.Ny[y]))
                     self.H_pt['HXY'] = H
-            if 'HiX' in calc:
+            if 'SiHXi' in calc:
                 H = ent(self.PXi).sum()
-                self.H_plugin['HiX'] = H
+                self.H_plugin['SiHXi'] = H
                 if pt:
                     for x in xrange(self.X_n):
                         H += pt_corr(pt_bayescount(self.PXi[:,x],self.N))
-                    self.H_pt['HiX'] = H
+                    self.H_pt['SiHXi'] = H
             if 'HiXY' in calc:
                 H = (self.PY * ent(self.PXiY)).sum()
                 self.H_plugin['HiXY'] = H
@@ -285,6 +292,19 @@ class DiscreteSystem:
                         for y in xrange(self.Y_dim):
                             H += pt_corr(pt_bayescount(self.PXiY[:,x,y],self.Ny[y]))
                     self.H_pt['HiXY'] = H
+            if 'HiX' in calc:
+                H = ent(self.PiX)
+                self.H_plugin['HiX'] = H
+                if pt:
+                    # no PT correction for HiX
+                    self.H_pt['HiX'] = H
+            if 'ChiX' in calc:
+                H = -np.ma.array(self.PX*np.log2(PiX),copy=False,
+                        mask=(p<=np.finfo(np.float).eps)).sum(axis=0)
+                self.H_plugin['ChiX'] = H
+                if pt:
+                    # no PT correction for ChiX
+                    self.H_pt['ChiX'] = H
         
         if nsb:
             # TODO: 1 external program call if all y have same number of trials
@@ -300,18 +320,21 @@ class DiscreteSystem:
                 for y in xrange(self.Y_dim):
                     H += self.PY[y] * nsb_entropy(self.PXY[:,y], self.Ny[y], self.X_dim)[0] / np.log(2)
                 self.H_nsb['HXY'] = H
-            if 'HiX' in calc:
+            if 'SiHXi' in calc:
                 # TODO: can easily use 1 call here
                 H = 0.0
                 for i in xrange(self.X_n):
                     H += nsb_entropy(self.PXi[:,i], self.N, self.X_m)[0] / np.log(2)
-                self.H_nsb['HiX'] = H
+                self.H_nsb['SiHXi'] = H
             if 'HiXY' in calc:
                 H = 0.0
                 for i in xrange(self.X_n):
                     for y in xrange(self.Y_dim):
                         H += self.PY[y] * nsb_entropy(self.PXiY[:,i,y], self.Ny[y], self.X_m)[0] / np.log(2)
                 self.H_nsb['HiXY'] = H
+            if 'HiX' in calc:
+                H = nsb_entropy(self.PiX, self.N, self.X_dim)[0] / np.log(2)
+                self.H_nsb['HiX'] = H
 
         if 'HshXY' in calc:
             #TODO: not so efficient since samples PY again
@@ -411,7 +434,128 @@ class DiscreteSystem:
                     "for shuffled mutual information estimator"
             return
         return I
+
+    def pola_decomp(self):
+        """Convenience function for Pola breakdown"""
+        I = {}
+        try:
+            I['lin'] = self.H['SiHXi'] - self.H['HiXY']
+            I['sig-sim'] = self.H['HiX'] - self.H['SiHXi']
+            I['cor-ind'] = -self.H['HiX'] + self.H['ChiX']
+            I['cor-dep'] = self.Ish() - self.H['ChiX'] + self.H['HiXY']
+        except KeyError:
+            print "Error: must compute SiHXi, HiXY, HiX, ChiX and Ish for Pola breakdown"
+        return I
                
+
+
+class SortedDiscreteSystem(DiscreteSystem):
+    """Class to hold probabilities and calculate entropies of 
+    a discrete stochastic system when the inputs are available already sorted.
+
+    """
+
+    def __init__(self, input, nt, X_m):
+        """Check and assign inputs. 
+        
+        This input format is compatible with `entropy_tb` from Entropy Toolbox 
+        for MATLAB (not released yet).
+
+        Parameters
+        ----------
+        input[X_n,Ntmax,Y_dim] : int array
+            Array of measured input values. For each trial t, and Y value y (Y should be 
+            a 1-D space) input[:,t,y] is the vector of X response with values in [0,X_m-1].
+        nt[Y_dim] : int array
+            Number of trials available for each y.
+        X_m : int
+            Finite alphabet size of X space.
+
+        """
+        self.X_n, self.Ntmax, self.Y_dim = input.shape
+        self.X_m = X_m
+        self.X_dim = self.X_m ** self.X_n
+        self.input = input
+        self._check_inputs(input)
+        self.N = nt.sum()
+        self.Ny = nt
+        self.sampled = False
+
+    def sample(self, method='naive'):
+        """Sample probabilities of system.
+
+        Parameters
+        ----------
+
+        method : {'naive', 'beta:x', 'kt'}, optional
+            Sampling method to use. 'naive' is the standard histrogram method.
+            'beta:x' is for an add-constant beta estimator, with beta value
+            following the colon eg 'beta:0.01' [1]_. 'kt' is for the 
+            Krichevsky-Trofimov estimator [2]_, which is equivalent to 
+            'beta:0.5'.
+
+        References
+        ----------
+        .. [1] T. Schurmann and P. Grassberger, "Entropy estimation of 
+           symbol sequences," Chaos,vol. 6, no. 3, pp. 414--427, 1996.
+        .. [2] R. Krichevsky and V. Trofimov, "The performance of universal 
+           encoding," IEEE Trans. Information Theory, vol. 27, no. 2, 
+           pp. 199--207, Mar. 1981. 
+
+        """
+        calc = self.calc
+
+        # decimalise
+        if any([c in calc for c in ['HXY','HX']]):
+            d_X = decimalise(self.input, self.X_n, self.X_m).T
+
+        # unconditional probabilities
+        if ('HX' in calc) or ('ChiX' in calc):
+            self.PX = prob(d_X, self.X_dim, method=method)
+        if any([c in calc for c in ['HXY','HiX','HiXY','HY']]):
+            self.PY = prob(d_Y, self.Y_dim, method=method)
+        if 'SiHXi' in calc:
+            for i in xrange(self.X_n):
+                self.PXi[:,i] = prob(self.X[i,:], self.X_m, method=method)
+            
+        # conditional probabilities
+        if any([c in calc for c in ['HiXY','HXY','HshXY']]):
+            for i in xrange(self.Y_dim):
+                indx = np.where(d_Y==i)[0]
+                self.Ny[i] = indx.size
+                if 'HXY' in calc:
+                    # output conditional ensemble
+                    oce = d_X[indx]
+                    if oce.size == 0:
+                        print 'Warning: Null output conditional ensemble for ' + \
+                          'output : ' + str(i)
+                    else:
+                        self.PXY[:,i] = prob(oce, self.X_dim, method=method)
+                if any([c in calc for c in ['HiX','HiXY','HshXY']]):
+                    for j in xrange(self.X_n):
+                        # output conditional ensemble for a single variable
+                        oce = self.X[j,indx]
+                        if oce.size == 0:
+                            print 'Warning: Null independent output conditional ensemble for ' + \
+                                'output : ' + str(i) + ', variable : ' + str(j)
+                        else:
+                            self.PXiY[:,j,i] = prob(oce, self.X_m, method=method)
+                            # shuffle
+                            np.random.shuffle(oce)
+                            self.Xsh[j,indx] = oce
+        # Pind(X) = <Pind(X|Y)>_y
+        if ('HiX' in calc) or ('ChiX' in calc):
+            # average over Y
+            PiXi = np.dot(self.PXiY, self.PY)
+            # construct joint distribution
+            words = dec2base(np.atleast_2d(np.r_[0:self.X_dim]).T,self.X_m,self.X_n)
+            self.PiX = PiXi[words,np.r_[0:self.X_n]].prod(axis=1)
+                            
+        self.sampled = True
+
+
+    
+
 
 def prob(x, n, method='naive'):
     """Sample probability of integer sequence.
@@ -554,3 +698,19 @@ def nsb_entropy(P, N, dim):
     dH = float(results[20].split(' ')[0])
 
     return [H, dH]
+
+def dec2base(x, b, digits):
+    """Convert decimal value to a row of values representing it in a 
+    given base."""
+
+    xs = x.shape
+    if xs[1] != 1:
+        raise ValueError, "Input x must be a column vector!"
+
+    power = np.ones((xs[0],1)) * (b ** np.c_[digits-1:-0.5:-1,].T)
+    x = np.tile(x,(1,digits))
+
+    y = np.floor( np.remainder(x, b*power) / power )
+
+    return y.astype(int)
+
