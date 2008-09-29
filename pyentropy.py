@@ -13,10 +13,13 @@
 #
 #    Copyright 2008 Robin Ince
 
+from __future__ import division
 import numpy as np
 import os
 from tempfile import NamedTemporaryFile
 import subprocess
+
+eps = np.finfo(np.float).eps
 
 class DiscreteSystem:
     """Class to hold probabilities and calculate entropies of 
@@ -670,14 +673,14 @@ def pt_bayescount(Pr, Nt):
     
     """
     
-    eps = np.finfo(np.float).eps
+    mask = Pr>eps
     # dimension of space
     dim = Pr.size
 
-    Rs = (Pr>eps).sum()
+    Rs = (mask).sum()
 
     if Rs < dim:
-        Rs_x = Rs - np.exp( Nt*np.log(1.0 - Pr + eps) )[ (Pr>eps) & (Pr<1) ].sum()
+        Rs_x = Rs - np.exp( Nt*np.log(1.0 - Pr + eps) )[ (mask) ].sum()
         delta_N_prev = dim
         delta_N = np.abs(Rs - Rs_x)
         xtr = 0
@@ -685,16 +688,15 @@ def pt_bayescount(Pr, Nt):
             xtr = xtr+1
             Rs_x = 0.0
             gg = xtr*(1.0 - ( (Nt/(Nt+Rs))**(1.0/Nt)))
-            qc_x = (1-gg) * (Pr*Nt+1) / (Nt+Rs)
-            Rs_x = (1.0 - np.exp(Nt*np.log(1.0-qc_x)))[Pr>eps].sum()
+            qc_x = (1.0-gg) * (Pr*Nt+1.0) / (Nt+Rs)
+            Rs_x = (1.0 - np.exp(Nt*np.log(1.0-qc_x)))[mask].sum()
             qc_x = gg / xtr
             Rs_x = Rs_x + xtr*(1.0 - np.exp( Nt * np.log(1.0 - qc_x)))
             delta_N_prev = delta_N
             delta_N = np.abs(Rs - Rs_x)
-        Rs = Rs + xtr - 1
+        Rs = Rs + xtr - 1.0
         if delta_N < delta_N_prev:
-            Rs = Rs + 1
-
+            Rs = Rs + 1.0
     return Rs
 
 
