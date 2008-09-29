@@ -23,7 +23,10 @@ Classes
 -------
 
   DiscreteSystem :
-      Class to sample and hold probabilities of a discrete system
+      Class to sample and hold probabilities of a general discrete system.
+  SortedDiscreteSystem:
+      Class to sample and hold probabilites for a system where the input
+      output mapping is available already sorted.
 
 """
 __author__ = 'Robin Ince'

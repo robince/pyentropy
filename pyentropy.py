@@ -64,7 +64,7 @@ class DiscreteSystem:
             Dimension of X (input) space; length n, base m words
         Y[Y_n,t] : int array
             Array of corresponding measured output values.
-        Y_dims : tutple (n,m)
+        Y_dims : tuple (n,m)
             Dimension of Y (output) space; length n, base m words
         qe_shuffle : bool (True)
             Set to False if trials already in random order, to skip shuffling
@@ -345,7 +345,7 @@ class DiscreteSystem:
 
         if 'HshXY' in calc:
             #TODO: not so efficient since samples PY again
-            sys = DiscreteSystem(self.Xsh, self.X_dims, self.Y, self.Y_dims)
+            sys = self._calc_ent_sh()
             sys.calculate_entropies(method=method, sampling=sampling, methods=methods, calc=['HXY'])
             if pt: 
                 self.H_pt['HshXY'] = sys.H_pt['HXY']
@@ -360,6 +360,9 @@ class DiscreteSystem:
             self.H = self.H_pt
         elif method == 'nsb':
             self.H = self.H_nsb
+
+    def _calc_ent_sh(self):
+        return DiscreteSystem(self.Xsh, self.X_dims, self.Y, self.Y_dims)
 
     def _qe_ent(self, qe_method, sampling, methods):
         calc = self.calc
@@ -456,36 +459,54 @@ class DiscreteSystem:
                
 
 class SortedDiscreteSystem(DiscreteSystem):
-    """Class to hold probabilities and calculate entropies of 
-    a discrete stochastic system when the inputs are available already sorted.
+    """Class to hold probabilities and calculate entropies of a discrete 
+    stochastic system when the inputs are available already sorted 
+    by stimulus.
+
+    Inherits from DiscreteSystem.
 
     """
-
-    def __init__(self, input, nt, X_m):
-        """Check and assign inputs. 
-        
-        This input format is compatible with `entropy_tb` from Entropy Toolbox 
-        for MATLAB (not released yet).
+    def __init__(self, X, X_dims, Y_m, Ny):
+        """Check and assign inputs.
 
         Parameters
         ----------
-        input[X_n,Ntmax,Y_dim] : int array
-            Array of measured input values. For each trial t, and Y value y (Y should be 
-            a 1-D space) input[:,t,y] is the vector of X response with values in [0,X_m-1].
-        nt[Y_dim] : int array
-            Number of trials available for each y.
-        X_m : int
-            Finite alphabet size of X space.
+        X[X_n,t] : int array
+            Array of measured input values.
+        X_dims : tuple (n,m)
+            Dimension of X (input) space; length n, base m words
+        Y_m : int 
+            Finite alphabet size of single variable Y
+        Ny[Y_m] : int array
+            Array of number of trials available for each stimulus. This should
+            be ordered the same as the order of X w.r.t. stimuli. 
+            Y_t.sum() = X.shape[1]
 
         """
-        self.X_n, self.Ntmax, self.Y_dim = input.shape
-        self.X_m = X_m
+        self.X_dims = X_dims
+        self.X_n = X_dims[0]
+        self.X_m = X_dims[1]
+        self.Y_m = Y_m
         self.X_dim = self.X_m ** self.X_n
-        self.input = input
-        self._check_inputs(input)
-        self.N = nt.sum()
-        self.Ny = nt
+        self.Y_dim = self.Y_m 
+        self.X = np.atleast_2d(X)
+        self.Ny = Ny.astype(float)
+        self.N = X.shape[1]
+        self._check_inputs()
         self.sampled = False
+        self.qe_shuffle = True
+
+    def _check_inputs(self):
+        if (not np.issubdtype(self.X.dtype, np.int)):
+            raise ValueError, "Inputs must be of integer type"
+        if (self.X.max() >= self.X_m) or (self.X.min() < 0):
+            raise ValueError, "X values must be in [0, X_m)"
+        if (self.X.shape[0] != self.X_n):
+            raise ValueError, "X.shape[0] must equal X_n"
+        if (self.Ny.size != self.Y_m):
+            raise ValueError, "Ny must contain Y_m elements"
+        if (self.Ny.sum() != self.N):
+            raise ValueError, "Ny.sum() must equal number of X input trials"
 
     def sample(self, method='naive'):
         """Sample probabilities of system.
@@ -513,22 +534,28 @@ class SortedDiscreteSystem(DiscreteSystem):
 
         # decimalise
         if any([c in calc for c in ['HXY','HX']]):
-            d_X = decimalise(self.input, self.X_n, self.X_m).T
+            if self.X_n > 1:
+                d_X = decimalise(self.X, self.X_n, self.X_m)
+            else:
+                # make 1D
+                d_X = self.X.reshape(self.X.size)
 
         # unconditional probabilities
         if ('HX' in calc) or ('ChiX' in calc):
             self.PX = prob(d_X, self.X_dim, method=method)
         if any([c in calc for c in ['HXY','HiX','HiXY','HY']]):
-            self.PY = prob(d_Y, self.Y_dim, method=method)
+            self.PY = _probcount(self.Ny,self.N,method)
         if 'SiHXi' in calc:
             for i in xrange(self.X_n):
                 self.PXi[:,i] = prob(self.X[i,:], self.X_m, method=method)
             
         # conditional probabilities
         if any([c in calc for c in ['HiXY','HXY','HshXY']]):
+            sstart=0
             for i in xrange(self.Y_dim):
-                indx = np.where(d_Y==i)[0]
-                self.Ny[i] = indx.size
+                send = sstart+self.Ny[i]
+                indx = slice(sstart,send)
+                sstart = send
                 if 'HXY' in calc:
                     # output conditional ensemble
                     oce = d_X[indx]
@@ -559,8 +586,8 @@ class SortedDiscreteSystem(DiscreteSystem):
                             
         self.sampled = True
 
-
-    
+    def _calc_ent_sh(self):
+        return SortedDiscreteSystem(self.Xsh, self.X_dims, self.Y_m, self.Ny)
 
 
 def prob(x, n, method='naive'):
@@ -591,19 +618,24 @@ def prob(x, n, method='naive'):
         P.resize((n,))
         P[n:]=0
 
+    return _probcount(P,x.size,method)
+
+
+def _probcount(C, N, method='naive'):
+    """Estimate probability from a vector of bin counts"""
+    N = float(N)
     if method.lower() == 'naive':
         # normal estimate
-        P /= x.size
+        P = C/N
     elif method.lower() == 'kt':
         # KT (constant addition) estimate
-        P = (P + 0.5) / (x.size + (n/2.0))
+        P = (C + 0.5) / (N + (C.size/2.0))
     elif method.split(':')[0].lower() == 'beta':
         beta = float(method.split(':')[1])
         # general add-constant beta estimate
-        P = (P + beta) / (x.size + (beta*r))
+        P = (C + beta) / (N + (beta*C.size))
     else:
         raise ValueError, 'Unknown sampling method: '+str(est)
-
     return P
 
 
