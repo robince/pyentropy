@@ -21,7 +21,270 @@ import subprocess
 
 eps = np.finfo(np.float).eps
 
-class DiscreteSystem:
+class BaseSystem:
+    """Base functionality for entropy calculations"""
+
+    def _calc_ents(self, method, sampling, methods):
+        """Main entropy calculation function for non-QE methods"""
+
+        self.sample(method=sampling)
+        pt = (method == 'pt') or ('pt' in methods)
+        plugin = (method == 'plugin') or ('plugin' in methods)
+        nsb = (method == 'nsb') or ('nsb' in methods)
+        calc = self.calc
+
+        if (pt or plugin): 
+            self._calc_pt_plugin(pt)
+        if nsb:
+            self._calc_nsb()
+        if 'HshXY' in calc:
+            #TODO: not so efficient since samples PY again
+            sh = self._sh_instance()
+            sh.calculate_entropies(method=method, 
+                                   sampling=sampling, 
+                                   methods=methods, calc=['HXY'])
+            if pt: 
+                self.H_pt['HshXY'] = sh.H_pt['HXY']
+            if nsb: 
+                self.H_nsb['HshXY'] = sh.H_nsb['HXY']
+            if plugin or pt: 
+                self.H_plugin['HshXY'] = sh.H_plugin['HXY']
+        if method == 'plugin':
+            self.H = self.H_plugin
+        elif method == 'pt':
+            self.H = self.H_pt
+        elif method == 'nsb':
+            self.H = self.H_nsb
+
+    def _calc_pt_plugin(self, pt):
+        calc = self.calc
+        pt_corr = lambda R: (R-1)/(2*self.N*np.log(2))
+        self.H_plugin = {}
+        if pt: self.H_pt = {}
+        # compute basic entropies
+        if 'HX' in calc:
+            H = ent(self.PX)
+            self.H_plugin['HX'] = H
+            if pt:
+                self.H_pt['HX'] = H + pt_corr(pt_bayescount(self.PX, self.N))
+        if 'HY' in calc:
+            H = ent(self.PY)
+            self.H_plugin['HY'] = H
+            if pt:
+                self.H_pt['HY'] = H + pt_corr(pt_bayescount(self.PY, self.N))
+        if 'HXY' in calc:
+            H = (self.PY * ent(self.PXY)).sum()
+            self.H_plugin['HXY'] = H
+            if pt:
+                for y in xrange(self.Y_dim):
+                    H += pt_corr(pt_bayescount(self.PXY[:,y], self.Ny[y]))
+                self.H_pt['HXY'] = H
+        if 'SiHXi' in calc:
+            H = ent(self.PXi).sum()
+            self.H_plugin['SiHXi'] = H
+            if pt:
+                for x in xrange(self.X_n):
+                    H += pt_corr(pt_bayescount(self.PXi[:,x],self.N))
+                self.H_pt['SiHXi'] = H
+        if 'HiXY' in calc:
+            H = (self.PY * ent(self.PXiY)).sum()
+            self.H_plugin['HiXY'] = H
+            if pt:
+                for x in xrange(self.X_n):
+                    for y in xrange(self.Y_dim):
+                        H += pt_corr(pt_bayescount(self.PXiY[:,x,y],self.Ny[y]))
+                self.H_pt['HiXY'] = H
+        if 'HiX' in calc:
+            H = ent(self.PiX)
+            self.H_plugin['HiX'] = H
+            if pt:
+                # no PT correction for HiX
+                self.H_pt['HiX'] = H
+        if 'ChiX' in calc:
+            H = -np.ma.array(self.PX*np.log2(self.PiX),copy=False,
+                    mask=(self.PiX<=np.finfo(np.float).eps)).sum(axis=0)
+            self.H_plugin['ChiX'] = H
+            if pt:
+                # no PT correction for ChiX
+                self.H_pt['ChiX'] = H
+    
+    def _calc_nsb(self):
+        # TODO: 1 external program call if all y have same number of trials
+        self.H_nsb = {}
+        if 'HX' in calc:
+            H = nsb_entropy(self.PX, self.N, self.X_dim)[0] / np.log(2)
+            self.H_nsb['HX'] = H
+        if 'HY' in calc:
+            H = nsb_entropy(self.PY, self.N, self.Y_dim)[0] / np.log(2)
+            self.H_nsb['HY'] = H
+        if 'HXY' in calc:
+            H = 0.0
+            for y in xrange(self.Y_dim):
+                H += self.PY[y] * nsb_entropy(self.PXY[:,y], self.Ny[y], self.X_dim)[0] \
+                        / np.log(2)
+            self.H_nsb['HXY'] = H
+        if 'SiHXi' in calc:
+            # TODO: can easily use 1 call here
+            H = 0.0
+            for i in xrange(self.X_n):
+                H += nsb_entropy(self.PXi[:,i], self.N, self.X_m)[0] / np.log(2)
+            self.H_nsb['SiHXi'] = H
+        if 'HiXY' in calc:
+            H = 0.0
+            for i in xrange(self.X_n):
+                for y in xrange(self.Y_dim):
+                    H += self.PY[y] * nsb_entropy(self.PXiY[:,i,y], self.Ny[y], self.X_m)[0] / np.log(2)
+            self.H_nsb['HiXY'] = H
+        if 'HiX' in calc:
+            H = nsb_entropy(self.PiX, self.N, self.X_dim)[0] / np.log(2)
+            self.H_nsb['HiX'] = H
+
+    def calculate_entropies(self, method='plugin', sampling='naive', 
+                            calc=['HX','HXY'], **kwargs):
+        """Calculate entropies of the system.
+
+        Parameters
+        ----------
+        method : {'plugin', 'pt', 'qe', 'nsb'}
+            Bias correction method to use.
+        sampling : {'naive', 'kt', 'beta:x'}
+            Sampling method to use. See docstring of sampling function for 
+            further details
+        calc :  {'HX','HY','HXY','SiHXi','HiX','HiXY','HshXY'}
+            List of entropies to compute.
+
+        Other Parameters
+        ----------------
+        qe_method : {'pt', 'nsb'}
+            Method argument to be passed for QE calculation. Allows combination
+            of QE with other corrections.
+        methods : list
+            If present, method argument will be ignored, and all corrections in 
+            list will be calculated. Used for comparing results of different methods
+            with one calculation pass.
+
+        Output
+        ------
+        self.H : dict
+            Dictionary of computed values.
+
+        Notes
+        -----
+        - If the PT method is chosen with outputs 'HiX' or 'ChiX' no bias 
+          correction will be performed for these terms.
+
+        """
+        self.calc = calc
+        self.methods = kwargs.get('methods',[])
+        for m in (self.methods + [method]):
+            if m not in ('plugin','pt','qe','nsb'):
+                raise ValueError, 'Unknown correction method : '+str(m)
+        methods = self.methods
+
+        # allocate memory for requested calculations
+        if any([c in calc for c in ['HXY','HiXY','HY']]):
+            # need Py for any conditional entropies
+            self.PY = np.zeros(self.Y_dim)
+        if ('HX' in calc) or ('ChiX' in calc):
+            self.PX = np.zeros(self.X_dim)
+        if ('HiX' in calc) or ('ChiX' in calc):
+            self.PiX = np.zeros(self.X_dim)
+        if 'HXY' in calc:
+            self.PXY = np.zeros((self.X_dim,self.Y_dim))
+        if 'SiHXi' in calc:
+            self.PXi = np.zeros((self.X_m,self.X_n))
+        if ('HiXY' in calc) or ('HiX' in calc):
+            self.PXiY = np.zeros((self.X_m,self.X_n,self.Y_dim))
+        if 'HshXY' in calc:
+            self.Xsh = np.zeros(self.X.shape,dtype=np.int)
+
+
+        if (method == 'qe') or ('qe' in methods):
+            # default to plugin method if not specified
+            qe_method = kwargs.get('qe_method','plugin')
+            if qe_method == 'qe':
+                raise ValueError, "Can't use qe for qe_method!"
+            self._qe_ent(qe_method,sampling,methods)
+            if method == 'qe':
+                self.H = self.H_qe
+        else:
+            self._calc_ents(method, sampling, methods)
+
+    def I(self):
+        """Convenience function to compute mutual information"""
+        try:
+            I = self.H['HX'] - self.H['HXY']
+        except KeyError:
+            print "Error: must have computed HX and HXY for" + \
+            "mutual information"
+            return
+        return I
+
+    def Ish(self):
+        """Convenience function for shuffled mutual information"""
+        try:
+            I = self.H['HX'] - self.H['HiXY'] + self.H['HshXY'] - self.H['HXY']
+        except KeyError:
+            print "Error: must have computed HX, HiXY, HshXY and HXY" + \
+                    "for shuffled mutual information estimator"
+            return
+        return I
+
+    def pola_decomp(self):
+        """Convenience function for Pola breakdown"""
+        I = {}
+        try:
+            I['lin'] = self.H['SiHXi'] - self.H['HiXY']
+            I['sig-sim'] = self.H['HiX'] - self.H['SiHXi']
+            I['cor-ind'] = -self.H['HiX'] + self.H['ChiX']
+            I['cor-dep'] = self.Ish() - self.H['ChiX'] + self.H['HiXY']
+        except KeyError:
+            print "Error: must compute SiHXi, HiXY, HiX, ChiX and Ish for Pola breakdown"
+        return I
+
+    def _qe_ent(self, qe_method, sampling, methods):
+        """General Quadratic Extrapolation Function"""
+        calc = self.calc
+        self._qe_prep()
+        N = self.N
+        N2 = N/2.0
+        N4 = N/4.0
+
+        # full length
+        # add on methods to do everything (other than qe) with this one call
+        self._calc_ents(qe_method,sampling,methods)
+        H1 = np.array([v for k,v in sorted(self.H.iteritems())])
+        
+        # half length
+        H2 = np.zeros(H1.shape)
+        half_slices = [(2,0), (2,1)]
+        for sl in half_slices:
+            sys = self._subsampled_instance(sl)
+            sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
+            H2 += np.array([v for k,v in sorted(sys.H.iteritems())])
+            del sys
+        H2 = H2 / 2.0
+        
+        # quarter length
+        H4 = np.zeros(H1.shape)
+        quarter_slices = [(4,0), (4,1), (4,2), (4,3)]
+        for sl in quarter_slices:
+            sys = self._subsampled_instance(sl)
+            sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
+            H4 += np.array([v for k,v in sorted(sys.H.iteritems())])
+            del sys
+        H4 = H4 / 4.0
+
+        # interpolation
+        Hqe = np.zeros(H1.size)
+        for i in xrange(H1.size):
+            Hqe[i] = np.polyfit([N4,N2,N],
+                        [N4*N4*H4[i], N2*N2*H2[i], N*N*H1[i]], 2)[0]
+        keys = [k for k,v in sorted(self.H_plugin.iteritems())]
+        self.H_qe = dict(zip(keys, Hqe))
+
+
+class DiscreteSystem(BaseSystem):
     """Class to hold probabilities and calculate entropies of 
     a discrete stochastic system.
 
@@ -160,9 +423,10 @@ class DiscreteSystem:
                                 'output : ' + str(i) + ', variable : ' + str(j)
                         else:
                             self.PXiY[:,j,i] = prob(oce, self.X_m, method=method)
-                            # shuffle
-                            np.random.shuffle(oce)
-                            self.Xsh[j,indx] = oce
+                            if 'HshXY' in calc:
+                                # shuffle
+                                np.random.shuffle(oce)
+                                self.Xsh[j,indx] = oce
         # Pind(X) = <Pind(X|Y)>_y
         if ('HiX' in calc) or ('ChiX' in calc):
             # average over Y
@@ -188,278 +452,39 @@ class DiscreteSystem:
         if (Y.shape[1] != X.shape[1]):
             raise ValueError, "X and Y must contain same number of trials"
 
-    def calculate_entropies(self,  method='plugin', sampling='naive', calc=['HX','HXY'], **kwargs):
-        """Calculate entropies of the system.
-
-        Parameters
-        ----------
-        method : {'plugin', 'pt', 'qe', 'nsb'}
-            Bias correction method to use.
-        sampling : {'naive', 'kt', 'beta:x'}
-            Sampling method to use. See docstring of sampling function for 
-            further details
-        calc :  {'HX','HY','HXY','SiHXi','HiX','HiXY','HshXY'}
-            List of entropies to compute.
-
-        Other Parameters
-        ----------------
-        qe_method : {'pt', 'nsb'}
-            Method argument to be passed for QE calculation. Allows combination
-            of QE with other corrections.
-        methods : list
-            If present, method argument will be ignored, and all corrections in 
-            list will be calculated. Used for comparing results of different methods
-            with one calculation pass.
-
-        Output
-        ------
-        self.H : dict
-            Dictionary of computed values.
-
-        Notes
-        -----
-        - If the PT method is chosen with outputs 'HiX' or 'ChiX' no bias 
-          correction will be performed for these terms.
-
-        """
-        self.calc = calc
-        self.methods = kwargs.get('methods',[])
-        for m in (self.methods + [method]):
-            if m not in ('plugin','pt','qe','nsb'):
-                raise ValueError, 'Unknown correction method : '+str(m)
-        methods = self.methods
-
-        # allocate memory for requested calculations
-        if any([c in calc for c in ['HXY','HiXY','HY']]):
-            # need Py for any conditional entropies
-            self.PY = np.zeros(self.Y_dim)
-        if ('HX' in calc) or ('ChiX' in calc):
-            self.PX = np.zeros(self.X_dim)
-        if ('HiX' in calc) or ('ChiX' in calc):
-            self.PiX = np.zeros(self.X_dim)
-        if 'HXY' in calc:
-            self.PXY = np.zeros((self.X_dim,self.Y_dim))
-        if 'SiHXi' in calc:
-            self.PXi = np.zeros((self.X_m,self.X_n))
-        if ('HiXY' in calc) or ('HiX' in calc):
-            self.PXiY = np.zeros((self.X_m,self.X_n,self.Y_dim))
-        if 'HshXY' in calc:
-            self.Xsh = np.zeros(self.X.shape,dtype=np.int)
-
-        self.sample(method=sampling)
-
-        if (method == 'qe') or ('qe' in methods):
-            # default to plugin method if not specified
-            qe_method = kwargs.get('qe_method','plugin')
-            if qe_method == 'qe':
-                raise ValueError, "Can't use qe for qe_method!"
-            self._qe_ent(qe_method,sampling,methods)
-            if method == 'qe':
-                self.H = self.H_qe
-        else:
-            self._calc_ents(method, sampling, methods)
-
-    def _calc_ents(self, method, sampling, methods):
-        pt = (method == 'pt') or ('pt' in methods)
-        plugin = (method == 'plugin') or ('plugin' in methods)
-        nsb = (method == 'nsb') or ('nsb' in methods)
-        calc = self.calc
-
-        if (pt or plugin): 
-            pt_corr = lambda R: (R-1)/(2*self.N*np.log(2))
-            self.H_plugin = {}
-            if pt: self.H_pt = {}
-            # compute basic entropies
-            if 'HX' in calc:
-                H = ent(self.PX)
-                self.H_plugin['HX'] = H
-                if pt:
-                    self.H_pt['HX'] = H + pt_corr(pt_bayescount(self.PX, self.N))
-            if 'HY' in calc:
-                H = ent(self.PY)
-                self.H_plugin['HY'] = H
-                if pt:
-                    self.H_pt['HY'] = H + pt_corr(pt_bayescount(self.PY, self.N))
-            if 'HXY' in calc:
-                H = (self.PY * ent(self.PXY)).sum()
-                self.H_plugin['HXY'] = H
-                if pt:
-                    for y in xrange(self.Y_dim):
-                        H += pt_corr(pt_bayescount(self.PXY[:,y], self.Ny[y]))
-                    self.H_pt['HXY'] = H
-            if 'SiHXi' in calc:
-                H = ent(self.PXi).sum()
-                self.H_plugin['SiHXi'] = H
-                if pt:
-                    for x in xrange(self.X_n):
-                        H += pt_corr(pt_bayescount(self.PXi[:,x],self.N))
-                    self.H_pt['SiHXi'] = H
-            if 'HiXY' in calc:
-                H = (self.PY * ent(self.PXiY)).sum()
-                self.H_plugin['HiXY'] = H
-                if pt:
-                    for x in xrange(self.X_n):
-                        for y in xrange(self.Y_dim):
-                            H += pt_corr(pt_bayescount(self.PXiY[:,x,y],self.Ny[y]))
-                    self.H_pt['HiXY'] = H
-            if 'HiX' in calc:
-                H = ent(self.PiX)
-                self.H_plugin['HiX'] = H
-                if pt:
-                    # no PT correction for HiX
-                    self.H_pt['HiX'] = H
-            if 'ChiX' in calc:
-                H = -np.ma.array(self.PX*np.log2(PiX),copy=False,
-                        mask=(p<=np.finfo(np.float).eps)).sum(axis=0)
-                self.H_plugin['ChiX'] = H
-                if pt:
-                    # no PT correction for ChiX
-                    self.H_pt['ChiX'] = H
-        
-        if nsb:
-            # TODO: 1 external program call if all y have same number of trials
-            self.H_nsb = {}
-            if 'HX' in calc:
-                H = nsb_entropy(self.PX, self.N, self.X_dim)[0] / np.log(2)
-                self.H_nsb['HX'] = H
-            if 'HY' in calc:
-                H = nsb_entropy(self.PY, self.N, self.Y_dim)[0] / np.log(2)
-                self.H_nsb['HY'] = H
-            if 'HXY' in calc:
-                H = 0.0
-                for y in xrange(self.Y_dim):
-                    H += self.PY[y] * nsb_entropy(self.PXY[:,y], self.Ny[y], self.X_dim)[0] / np.log(2)
-                self.H_nsb['HXY'] = H
-            if 'SiHXi' in calc:
-                # TODO: can easily use 1 call here
-                H = 0.0
-                for i in xrange(self.X_n):
-                    H += nsb_entropy(self.PXi[:,i], self.N, self.X_m)[0] / np.log(2)
-                self.H_nsb['SiHXi'] = H
-            if 'HiXY' in calc:
-                H = 0.0
-                for i in xrange(self.X_n):
-                    for y in xrange(self.Y_dim):
-                        H += self.PY[y] * nsb_entropy(self.PXiY[:,i,y], self.Ny[y], self.X_m)[0] / np.log(2)
-                self.H_nsb['HiXY'] = H
-            if 'HiX' in calc:
-                H = nsb_entropy(self.PiX, self.N, self.X_dim)[0] / np.log(2)
-                self.H_nsb['HiX'] = H
-
-        if 'HshXY' in calc:
-            #TODO: not so efficient since samples PY again
-            sys = self._calc_ent_sh()
-            sys.calculate_entropies(method=method, sampling=sampling, methods=methods, calc=['HXY'])
-            if pt: 
-                self.H_pt['HshXY'] = sys.H_pt['HXY']
-            if nsb: 
-                self.H_nsb['HshXY'] = sys.H_nsb['HXY']
-            if plugin or pt: 
-                self.H_plugin['HshXY'] = sys.H_plugin['HXY']
-
-        if method == 'plugin':
-            self.H = self.H_plugin
-        elif method == 'pt':
-            self.H = self.H_pt
-        elif method == 'nsb':
-            self.H = self.H_nsb
-
-    def _calc_ent_sh(self):
+    def _sh_instance(self):
+        """Return shuffled instance"""
+        # do it like this to allow easy inheritence
         return DiscreteSystem(self.Xsh, self.X_dims, self.Y, self.Y_dims)
 
-    def _qe_ent(self, qe_method, sampling, methods):
-        calc = self.calc
+    def _qe_prep(self):
+        """QE Preparation"""
+        if self.qe_shuffle:
+            # need to shuffle to ensure even stimulus distribution for QE
+            shuffle = np.random.permutation(self.N)
+            self.X = self.X[:,shuffle]
+            self.Y = self.Y[:,shuffle]
+
+        # ensure trials is a multiple of 4 for easy QE
         rem = np.mod(self.X.shape[1],4)
         if rem != 0:
             self.X = self.X[:,:-rem]
             self.Y = self.Y[:,:-rem]
-        N = self.X.shape[1] 
-        N2 = N/2.0
-        N4 = N/4.0
+        self.N = self.X.shape[1]
 
-        if self.qe_shuffle:
-            # need to shuffle to ensure even stimulus distribution for QE
-            shuffle = np.random.permutation(N)
-            self.X = self.X[:,shuffle]
-            self.Y = self.Y[:,shuffle]
-
-        # full length
-        # add on methods to do everything (other than qe) with this one call
-        if 'qe' in methods:
-            methods.remove('qe')
-        self._calc_ents(qe_method,sampling,methods)
-        H1 = np.array([v for k,v in sorted(self.H.iteritems())])
+    def _subsampled_instance(self, sub):
+        """Return subsampled instance for QE
         
-        # half length
-        sys = DiscreteSystem(self.X[:,:N2], self.X_dims, 
-                             self.Y[:,:N2], self.Y_dims)
-        sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
-        H2a = np.array([v for k,v in sorted(sys.H.iteritems())])
-        sys = DiscreteSystem(self.X[:,N2:], self.X_dims, 
-                             self.Y[:,N2:], self.Y_dims)
-        sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
-        H2b = np.array([v for k,v in sorted(sys.H.iteritems())])
-        H2 = (H2a + H2b) / 2.0
-        
-        # quarter length
-        sys = DiscreteSystem(self.X[:,:N4], self.X_dims, 
-                             self.Y[:,:N4], self.Y_dims)
-        sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
-        H4a = np.array([v for k,v in sorted(sys.H.iteritems())])
-        sys = DiscreteSystem(self.X[:,N4:N2], self.X_dims, 
-                             self.Y[:,N4:N2], self.Y_dims)
-        sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
-        H4b = np.array([v for k,v in sorted(sys.H.iteritems())])
-        sys = DiscreteSystem(self.X[:,N2:N2+N4], self.X_dims, 
-                             self.Y[:,N2:N2+N4], self.Y_dims)
-        sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
-        H4c = np.array([v for k,v in sorted(sys.H.iteritems())])
-        sys = DiscreteSystem(self.X[:,N2+N4:], self.X_dims, 
-                             self.Y[:,N2+N4:], self.Y_dims)
-        sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
-        H4d = np.array([v for k,v in sorted(sys.H.iteritems())])
-        H4 = (H4a + H4b + H4c + H4d) / 4.0
-        
-        # interpolation
-        Hqe = np.zeros(H1.size)
-        for i in xrange(H1.size):
-            Hqe[i] = np.polyfit([N4,N2,N],
-                        [N4*N4*H4[i], N2*N2*H2[i], N*N*H1[i]], 2)[0]
-        keys = [k for k,v in sorted(self.H_plugin.iteritems())]
-        self.H_qe = dict(zip(keys, Hqe))
+        sub : tuple (df, i) 
+              red - reduction factor (2, 4)
+              i - interval
 
-    def I(self):
-        """Convenience function to compute mutual information"""
-        try:
-            I = self.H['HX'] - self.H['HXY']
-        except KeyError:
-            print "Error: must have computed HX and HXY for" + \
-            "mutual information"
-            return
-        return I
+        """
+        Nred = self.N / sub[0]
+        sl = slice(sub[1]*Nred,(sub[1]+1)*Nred)
+        return DiscreteSystem(self.X[:,sl], self.X_dims,
+                              self.Y[:,sl], self.Y_dims)
 
-    def Ish(self):
-        """Convenience function for shuffled mutual information"""
-        try:
-            I = self.H['HX'] - self.H['HiXY'] + self.H['HshXY'] - self.H['HXY']
-        except KeyError:
-            print "Error: must have computed HX, HiXY, HshXY and HXY" + \
-                    "for shuffled mutual information estimator"
-            return
-        return I
-
-    def pola_decomp(self):
-        """Convenience function for Pola breakdown"""
-        I = {}
-        try:
-            I['lin'] = self.H['SiHXi'] - self.H['HiXY']
-            I['sig-sim'] = self.H['HiX'] - self.H['SiHXi']
-            I['cor-ind'] = -self.H['HiX'] + self.H['ChiX']
-            I['cor-dep'] = self.Ish() - self.H['ChiX'] + self.H['HiXY']
-        except KeyError:
-            print "Error: must compute SiHXi, HiXY, HiX, ChiX and Ish for Pola breakdown"
-        return I
-               
 
 class SortedDiscreteSystem(DiscreteSystem):
     """Class to hold probabilities and calculate entropies of a discrete 
@@ -576,9 +601,10 @@ class SortedDiscreteSystem(DiscreteSystem):
                                 'output : ' + str(i) + ', variable : ' + str(j)
                         else:
                             self.PXiY[:,j,i] = prob(oce, self.X_m, method=method)
-                            # shuffle
-                            np.random.shuffle(oce)
-                            self.Xsh[j,indx] = oce
+                            if 'HshXY' in calc:
+                                # shuffle
+                                np.random.shuffle(oce)
+                                self.Xsh[j,indx] = oce
         # Pind(X) = <Pind(X|Y)>_y
         if ('HiX' in calc) or ('ChiX' in calc):
             # average over Y
@@ -589,8 +615,43 @@ class SortedDiscreteSystem(DiscreteSystem):
                             
         self.sampled = True
 
-    def _calc_ent_sh(self):
+    def _sh_instance(self):
         return SortedDiscreteSystem(self.Xsh, self.X_dims, self.Y_m, self.Ny)
+
+    def _qe_prep(self):
+        """QE Preparation"""
+        if self.qe_shuffle:
+            # need to shuffle to ensure even stimulus distribution for QE
+            sstart = 0
+            for i in xrange(self.Y_m):
+                send = sstart + int(self.Ny[i])
+                shuffle = np.random.permutation(int(self.Ny[i]))
+                self.X[:,sstart:send] = self.X[:,sstart+shuffle]
+                sstart = send
+                
+    def _subsampled_instance(self, sub):
+        """Return subsampled instance for QE
+        
+        sub : tuple (df, i) 
+              red - reduction factor (2, 4)
+              i - interval
+
+        """
+
+        # reduce each Y data set 
+        slices = []
+        Ny_new = np.floor(self.Ny/sub[0]).astype(int)
+        sstart = 0
+        for i in xrange(self.Y_m):
+            send = sstart + int(self.Ny[i])
+            sl = slice(sstart + (sub[1] * Ny_new[i]), 
+                       sstart + ((sub[1]+1) * Ny_new[i]))
+            slices.append(sl)
+            sstart = send
+        X_new = self.X[:,np.r_[tuple(slices)]]
+
+        return SortedDiscreteSystem(X_new, self.X_dims,
+                              self.Y_m, Ny_new)
 
 
 def prob(x, n, method='naive'):
