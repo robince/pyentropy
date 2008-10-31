@@ -28,6 +28,6 @@ class DiscreteSystemTestCase(unittest.TestCase):
         # self.sys = None
         pass
 
-if __name__ '__main__':
+if __name__ == '__main__':
     unittest.main()
 

@@ -30,6 +30,6 @@ Classes
 
 """
 __author__ = 'Robin Ince'
-__version__ = '0.2dev'
+__version__ = '0.2'
 
 from pyentropy import *
