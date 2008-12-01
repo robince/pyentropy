@@ -109,6 +109,7 @@ class BaseSystem:
                 self.H_pt['ChiX'] = H
     
     def _calc_nsb(self):
+        calc = self.calc
         # TODO: 1 external program call if all y have same number of trials
         self.H_nsb = {}
         if 'HX' in calc:
@@ -663,7 +664,7 @@ def prob(x, n, method='naive'):
         integer input sequence
     n : int
         dimension of input sequence (max(x)<r)
-    method: {'naive', 'kt', 'beta:x'}
+    method: {'naive', 'kt', 'beta:x','shrink'}
         Sampling method to use. 
 
     Returns
@@ -694,6 +695,13 @@ def _probcount(C, N, method='naive'):
     elif method.lower() == 'kt':
         # KT (constant addition) estimate
         P = (C + 0.5) / (N + (C.size/2.0))
+    elif method.lower() == 'shrink':
+        # James-Stein shrinkage
+        # http://www.strimmerlab.org/software/entropy/index.html
+        Pnaive = C/N
+        target = 1./C.size
+        lam = _get_lambda_shrink(N, Pnaive, target)
+        P = (lam * target) + ((1 - lam) * Pnaive)
     elif method.split(':')[0].lower() == 'beta':
         beta = float(method.split(':')[1])
         # general add-constant beta estimate
@@ -702,6 +710,26 @@ def _probcount(C, N, method='naive'):
         raise ValueError, 'Unknown sampling method: '+str(est)
     return P
 
+def _get_lambda_shrink(N, u, target):
+    """Lambda shrinkage estimator"""
+    # *unbiased* estimator of variance of u
+    varu = u*(1-u)/(N-1)
+    # misspecification
+    msp = ((u-target)**2).sum()
+
+    # estimate shrinkage intensity
+    if msp == 0:
+        lam = 1.
+    else:
+        lam = (varu/msp).sum()
+        
+    # truncate
+    if lam > 1:
+        lam = 1 
+    elif lam < 0:
+        lam = 0
+
+    return lam
 
 def decimalise(x, n, m):
     """Decimalise discrete response.
