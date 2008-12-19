@@ -771,26 +771,26 @@ def pt_bayescount(Pr, Nt):
     
     R = Rnaive
     if Rnaive < dim:
-        Rexpected = Rnaive - ((1.0-Pr)**Nt).sum()
+        Rexpected = Rnaive - ((1.0-PrNZ)**Nt).sum()
         deltaR_prev = dim
         deltaR = np.abs(Rnaive - Rexpected)
-        xtr = 0
+        xtr = 0.0
         while (deltaR < deltaR_prev) and ((Rnaive+xtr)<dim):
-            xtr = xtr+1
+            xtr = xtr+1.0
             Rexpected = 0.0
             # occupied bins
             gamma = xtr*(1.0 - ((Nt/(Nt+Rnaive))**(1.0/Nt)))
-            Pbayes = ((1.0-gamma) / (Nt+Rnaive)) * (Pr*Nt+1.0)
+            Pbayes = ((1.0-gamma) / (Nt+Rnaive)) * (PrNZ*Nt+1.0)
             Rexpected = (1.0 - (1.0-Pbayes)**Nt).sum()
             # non-occupied bins
             Pbayes = gamma / xtr
             Rexpected = Rexpected + xtr*(1.0 - (1.0 - Pbayes)**Nt)
             deltaR_prev = deltaR
             deltaR = np.abs(Rnaive - Rexpected)
-        Rnaive -= xtr - 1.0
+        Rnaive = Rnaive + xtr - 1.0
         if deltaR < deltaR_prev:
             Rnaive += 1.0
-    return R
+    return Rnaive
 
 
 def nsb_entropy(P, N, dim):
