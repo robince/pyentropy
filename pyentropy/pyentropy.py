@@ -107,6 +107,26 @@ class BaseSystem:
             if pt:
                 # no PT correction for ChiX
                 self.H_pt['ChiX'] = H
+        # for adelman style I(k;spike) (bits/spike)
+        if 'HXY1' in calc:
+            if self.Y_m != 2:
+                raise ValueError, \
+                "HXY1 calculation only makes sense for spike data, ie Y_m = 2"
+            H = ent(self.PXY[:,1])
+            self.H_plugin['HXY1'] = H
+            if pt:
+                self.H_pt['HXY1'] = H + pt_corr(pt_bayescount(self.PXY[:,1],self.Ny[1])) 
+        if 'ChiXY1' in calc:
+            if self.Y_m != 2:
+                raise ValueError, \
+                "ChiXY1 calculation only makes sense for spike data, ie Y_m = 2"
+            H = -np.ma.array(self.PXY[:,1]*np.log2(self.PX),copy=False,
+                    mask=(self.PX<=np.finfo(np.float).eps)).sum()
+            self.H_plugin['ChiXY1'] = H
+            if pt:
+                # no PT for ChiXY1
+                self.H_pt['ChiXY1'] = H
+                
     
     def _calc_nsb(self):
         calc = self.calc
@@ -186,11 +206,11 @@ class BaseSystem:
         if any([c in calc for c in ['HXY','HiXY','HY']]):
             # need Py for any conditional entropies
             self.PY = np.zeros(self.Y_dim)
-        if ('HX' in calc) or ('ChiX' in calc):
+        if any([c in calc for c in ['HX','ChiX','ChiXY1']]):
             self.PX = np.zeros(self.X_dim)
         if ('HiX' in calc) or ('ChiX' in calc):
             self.PiX = np.zeros(self.X_dim)
-        if 'HXY' in calc:
+        if any([c in calc for c in ['HXY','HXY1','ChiXY1']]):
             self.PXY = np.zeros((self.X_dim,self.Y_dim))
         if 'SiHXi' in calc:
             self.PXi = np.zeros((self.X_m,self.X_n))
@@ -241,6 +261,14 @@ class BaseSystem:
             I['cor-dep'] = self.Ish() - self.H['ChiX'] + self.H['HiXY']
         except KeyError:
             print "Error: must compute SiHXi, HiXY, HiX, ChiX and Ish for Pola breakdown"
+        return I
+
+    def Ispike(self):
+        """Adelman (2003) style information per spike """
+        try:
+            I = self.H['ChiXY1'] - self.H['HXY1']
+        except KeyError:
+            print "Error: must compute ChiXY1, HXY1 for Ispike"
         return I
 
     def _qe_ent(self, qe_method, sampling, methods):
