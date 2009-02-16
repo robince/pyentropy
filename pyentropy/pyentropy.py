@@ -171,7 +171,7 @@ class BaseSystem:
         sampling : {'naive', 'kt', 'beta:x'}
             Sampling method to use. See docstring of sampling function for 
             further details
-        calc :  {'HX','HY','HXY','SiHXi','HiX','HiXY','HshXY'}
+        calc :  {'HX','HY','HXY','SiHXi','HiX','HiXY','HshXY','ChiX','HXY1','ChiXY1'}
             List of entropies to compute.
 
         Other Parameters
