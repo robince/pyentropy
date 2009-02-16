@@ -350,7 +350,7 @@ class DiscreteSystem(BaseSystem):
         self.X = np.atleast_2d(X)
         self.Y = np.atleast_2d(Y)
         self._check_inputs(self.X, self.Y)
-        self.N = X.shape[1]
+        self.N = self.X.shape[1]
         self.Ny = np.zeros(self.Y_dim)
         self.qe_shuffle = qe_shuffle
         self.sampled = False
@@ -520,7 +520,7 @@ class SortedDiscreteSystem(DiscreteSystem):
         self.Y_dim = self.Y_m 
         self.X = np.atleast_2d(X)
         self.Ny = Ny.astype(float)
-        self.N = X.shape[1]
+        self.N = self.X.shape[1]
         self._check_inputs()
         self.sampled = False
         self.qe_shuffle = True
