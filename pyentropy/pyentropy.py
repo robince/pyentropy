@@ -269,6 +269,7 @@ class BaseSystem:
             I = self.H['ChiXY1'] - self.H['HXY1']
         except KeyError:
             print "Error: must compute ChiXY1, HXY1 for Ispike"
+            return
         return I
 
     def _qe_ent(self, qe_method, sampling, methods):
