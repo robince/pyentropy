@@ -36,13 +36,27 @@ from famaxent import AmariSolve
 a = AmariSolve(n=4,m=5)
 
 # solve maxent preserving marginals of given order
-# P is the probability vector (length m^n -1) of the measured distribution
-# whose marginals act as the contraints
-# k is the order of the solution
-# sometimes to get it to converge it is necessary to play with the initial
-# condition for the numerical optimisation using argument eg:
-# ic_offset=-0.00001
 P2 = a.solve_single(P,k=2)
+
+- P is the probability vector (length m^n -1) of the measured distribution
+  whose marginals act as the contraints on the maximum entropy solution.
+  P is ordered such that the value of the index is equal to the decimal 
+  value of the input state represented, when interpreted as a base m, length n
+  word. eg for n=3,m=3:
+    P[0] = P(0,0,0)
+    P[1] = P(0,0,1)
+    P[2] = P(0,0,2)
+    P[3] = P(0,1,0)
+    P[4] = P(0,1,1) etc.
+  This allows efficient vectorised conversion between probability index and 
+  response word using base2dec, dec2base. The output is in the same format.
+
+- k is the order of the solution (order of marginals up to which are preserved)
+
+- sometimes to get it to converge it is necessary to play with the initial
+  condition for the numerical optimisation using argument eg:
+    ic_offset=-0.00001
+
 
 The code expects a data/ directory where it will store the generated 
 transformation matrix for a given parameter set. If it finds one there it will 
