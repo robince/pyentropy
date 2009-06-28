@@ -383,6 +383,7 @@ class DiscreteSystem(BaseSystem):
         self.Ny = np.zeros(self.Y_dim)
         self.qe_shuffle = qe_shuffle
         self.sampled = False
+        self.calc = []
         
     def sample(self, method='naive'):
         """Sample probabilities of system.
@@ -455,8 +456,9 @@ class DiscreteSystem(BaseSystem):
                             self.PXiY[:,j,i] = prob(oce, self.X_m, method=method)
                             if 'HshXY' in calc:
                                 # shuffle
-                                np.random.shuffle(oce)
-                                self.Xsh[j,indx] = oce
+                                #np.random.shuffle(oce)
+                                shfoce = np.random.permutation(oce)
+                                self.Xsh[j,indx] = shfoce
         # Pind(X) = <Pind(X|Y)>_y
         if ('HiX' in calc) or ('ChiX' in calc):
             # average over Y
@@ -553,6 +555,7 @@ class SortedDiscreteSystem(DiscreteSystem):
         self._check_inputs()
         self.sampled = False
         self.qe_shuffle = True
+        self.calc = []
 
     def _check_inputs(self):
         if (not np.issubdtype(self.X.dtype, np.int)):
@@ -633,8 +636,9 @@ class SortedDiscreteSystem(DiscreteSystem):
                             self.PXiY[:,j,i] = prob(oce, self.X_m, method=method)
                             if 'HshXY' in calc:
                                 # shuffle
-                                np.random.shuffle(oce)
-                                self.Xsh[j,indx] = oce
+                                #np.random.shuffle(oce)
+                                shfoce = np.random.permutation(oce)
+                                self.Xsh[j,indx] = shfoce
         # Pind(X) = <Pind(X|Y)>_y
         if ('HiX' in calc) or ('ChiX' in calc):
             # average over Y
