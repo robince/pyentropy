@@ -642,12 +642,13 @@ class SortedDiscreteSystem(DiscreteSystem):
                                 self.Xsh[j,indx] = shfoce
         # Pind(X) = <Pind(X|Y)>_y
         if ('HiX' in calc) or ('ChiX' in calc):
-            # average over Y
-            PiXi = np.dot(self.PXiY, self.PY)
             # construct joint distribution
             words = dec2base(np.atleast_2d(np.r_[0:self.X_dim]).T,self.X_m,self.X_n)
-            self.PiX = PiXi[words,np.r_[0:self.X_n]].prod(axis=1)
-                            
+            PiXY = np.zeros((self.X_dim, self.Y_dim))
+            PiXY = self.PXiY[words,np.r_[0:self.X_n]].prod(axis=1)
+            # average over Y
+            self.PiX = np.dot(PiXY,self.PY)
+
         self.sampled = True
 
     def _sh_instance(self):
