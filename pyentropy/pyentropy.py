@@ -416,7 +416,7 @@ class DiscreteSystem(BaseSystem):
             else:
                 # make 1D
                 d_X = self.X.reshape(self.X.size)
-        if any([c in calc for c in ['HiX','HiXY','HXY']]):
+        if any([c in calc for c in ['HiX','HiXY','HXY','HY']]):
             if self.Y_n > 1:
                 d_Y = decimalise(self.Y, self.Y_n, self.Y_m)
             else:
