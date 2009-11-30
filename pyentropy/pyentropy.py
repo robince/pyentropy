@@ -49,6 +49,18 @@ class BaseSystem:
                 self.H_nsb['HshXY'] = sh.H_nsb['HXY']
             if plugin or pt: 
                 self.H_plugin['HshXY'] = sh.H_plugin['HXY']
+        if 'HshX' in calc:
+            sh = self._shX_instance()
+            sh.calculate_entropies(method=method,
+                                   sampling=sampling,
+                                   methods=methods, calc=['HX'])
+            if pt: 
+                self.H_pt['HshX'] = sh.H_pt['HX']
+            if nsb: 
+                self.H_nsb['HshX'] = sh.H_nsb['HX']
+            if plugin or pt: 
+                self.H_plugin['HshX'] = sh.H_plugin['HX']
+            
         if method == 'plugin':
             self.H = self.H_plugin
         elif method == 'pt':
@@ -206,7 +218,7 @@ class BaseSystem:
         if any([c in calc for c in ['HXY','HiXY','HY']]):
             # need Py for any conditional entropies
             self.PY = np.zeros(self.Y_dim)
-        if any([c in calc for c in ['HX','ChiX','ChiXY1']]):
+        if any([c in calc for c in ['HX','HshX','ChiX','ChiXY1']]):
             self.PX = np.zeros(self.X_dim)
         if ('HiX' in calc) or ('ChiX' in calc):
             self.PiX = np.zeros(self.X_dim)
@@ -490,6 +502,16 @@ class DiscreteSystem(BaseSystem):
         # do it like this to allow easy inheritence
         return DiscreteSystem(self.Xsh, self.X_dims, self.Y, self.Y_dims)
 
+    def _shX_instance(self):
+        """Return shuffled instance"""
+        # do it like this to allow easy inheritence
+        # unconditional shuffle
+        Xsh_un = np.zeros_like(self.X)
+        for i in range(self.X_n):
+            shindx = np.random.permutation(self.X.shape[1])
+            Xsh_un[i,:] = self.X[i,shindx]
+        return DiscreteSystem(Xsh_un, self.X_dims, self.Y, self.Y_dims)
+
     def _qe_prep(self):
         """QE Preparation"""
         if self.qe_shuffle:
@@ -652,7 +674,17 @@ class SortedDiscreteSystem(DiscreteSystem):
         self.sampled = True
 
     def _sh_instance(self):
+        """Return shuffled instance"""
         return SortedDiscreteSystem(self.Xsh, self.X_dims, self.Y_m, self.Ny)
+
+    def _shX_instance(self):
+        """Return shuffled instance"""
+        # unconditional shuffle
+        Xsh_un = np.zeros_like(self.X)
+        for i in range(self.X_n):
+            shindx = np.random.permutation(self.X.shape[1])
+            Xsh_un[i,:] = self.X[i,shindx]
+        return SortedDiscreteSystem(Xsh_un, self.X_dims, self.Y_m, self.Ny)
 
     def _qe_prep(self):
         """QE Preparation"""
