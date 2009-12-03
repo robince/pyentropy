@@ -247,7 +247,7 @@ class BaseSystem:
         """Convenience function to compute mutual information"""
         try:
             I = self.H['HX'] - self.H['HXY']
-        except KeyError:
+        except (KeyError, AttributeError):
             print "Error: must have computed HX and HXY for" + \
             "mutual information"
             return
@@ -257,7 +257,7 @@ class BaseSystem:
         """Convenience function for shuffled mutual information"""
         try:
             I = self.H['HX'] - self.H['HiXY'] + self.H['HshXY'] - self.H['HXY']
-        except KeyError:
+        except (KeyError, AttributeError):
             print "Error: must have computed HX, HiXY, HshXY and HXY" + \
                     "for shuffled mutual information estimator"
             return
@@ -271,7 +271,7 @@ class BaseSystem:
             I['sig-sim'] = self.H['HiX'] - self.H['SiHXi']
             I['cor-ind'] = -self.H['HiX'] + self.H['ChiX']
             I['cor-dep'] = self.Ish() - self.H['ChiX'] + self.H['HiXY']
-        except KeyError:
+        except (KeyError, AttributeError):
             print "Error: must compute SiHXi, HiXY, HiX, ChiX and Ish for Pola breakdown"
         return I
 
@@ -279,7 +279,7 @@ class BaseSystem:
         """Adelman (2003) style information per spike """
         try:
             I = self.H['ChiXY1'] - self.H['HXY1']
-        except KeyError:
+        except (KeyError, AttributeError):
             print "Error: must compute ChiXY1, HXY1 for Ispike"
             return
         return I
