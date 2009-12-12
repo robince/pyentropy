@@ -79,11 +79,14 @@ import numpy as np
 import scipy.io as sio
 import scipy.sparse as sparse
 import scipy.optimize as opt
-try:
-    import scikits.umfpack as um
-    HAS_UMFPACK = True
-except:
-    HAS_UMFPACK = False
+# umfpack disabled due to bug in scipy
+# http://mail.scipy.org/pipermail/scipy-user/2009-December/023625.html
+#try:
+    #import scikits.umfpack as um
+    #HAS_UMFPACK = True
+#except:
+    #HAS_UMFPACK = False
+HAS_UMFPACK = False
 from scipy.sparse.linalg import spsolve
 from utils import dec2base, base2dec
 import ConfigParser
@@ -189,12 +192,6 @@ class AmariSolve:
             self._generate_matrix()
         elif os.path.exists(self.filename+'.mat'):
             loaddict = sio.loadmat(self.filename+'.mat')
-            self.A = loaddict['A'].tocsc()
-            self.order_idx = loaddict['order_idx'].squeeze()
-        elif os.path.exists(self.filename+'.pkl'):
-            fd = file(self.filename+'.pkl','rb')
-            loaddict = cPickle.load(fd)
-            fd.close()
             self.A = loaddict['A'].tocsc()
             self.order_idx = loaddict['order_idx'].squeeze()
         else:
