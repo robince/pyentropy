@@ -441,4 +441,41 @@ def inscol(x,h,n):
     return y
 
 
+def order1direct(p,a):
+    """Compute first order solution directly for testing"""
+    if p.size != a.fdim:
+        raise ValueError, "Probability vector doesn't match a.fdim"
 
+    # 1st order marginals
+    marg = a.eta_from_p(p)[:a.order_idx[1]]
+    # output
+    p1 = np.zeros(a.fdim)
+
+    the1pos = lambda x,v: ((v-1)*a.n)+x
+
+    # loop over all probabilities (not p(0))
+    for i in range(1,a.fdim):
+        Pword = dec2base(np.atleast_2d(i).T,a.m,a.n)
+
+        # loop over each variable
+        for j in range(a.n):
+
+            # this value
+            x = Pword[0][j]
+            if x!=0:
+                # this is a normal non-zero marginal
+                factor = marg[the1pos(j,x)]
+            else:
+                # this is a zero-value marginal
+                factor = 1 - marg[the1pos(j,np.r_[1:a.m])].sum()
+
+            if p1[i]==0:
+                # first entry
+                p1[i] = factor
+            else:
+                p1[i] *= factor
+
+    # normalise
+    p1[0] = 1.0 - p1.sum()
+    return p1
+        

@@ -13,7 +13,7 @@
 #
 #    Copyright 2008 Robin Ince
 import numpy as np
-from nose.tools import with_setup, assert_raises
+from nose.tools import assert_raises
 from numpy.testing import *
 from pyentropy.utils import *
 
