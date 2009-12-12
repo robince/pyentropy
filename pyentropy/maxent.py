@@ -37,7 +37,7 @@ from pyentropy.maxent import AmariSolve
 a = AmariSolve(n=4,m=5)
 
 # solve maxent preserving marginals of given order
-P2 = a.solve_single(P,k=2)
+P2 = a.solve(P,k=2)
 
 - P is the probability vector (length m^n -1) of the measured distribution
   whose marginals act as the contraints on the maximum entropy solution.
@@ -138,8 +138,8 @@ class AmariSolve:
     -------
     __init__(n,m) :
         constructor generates/loads transformation matrix
-    solve_single(Pr,k) : 
-        maxent solution of a single distribution
+    solve(Pr,k) : 
+        maxent solution of a distribution
     theta_from_p(P), eta_from_p(P) :
         Amari coordinate transformations
     si2un(x), un2si(x) : 
@@ -313,7 +313,7 @@ class AmariSolve:
                     self._recloop(order, depth+1, alpha_new, pos_new, n, m, blocksize=blocksize)
 
 
-    def solve_single(self,Pr,k,eta_given=False,ic_offset=-0.01, **kwargs):
+    def solve(self,Pr,k,eta_given=False,ic_offset=-0.01, **kwargs):
         """Find Amari maxent distribution for a given order k
         
         Inputs:
