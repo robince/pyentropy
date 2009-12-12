@@ -26,10 +26,12 @@ Classes
       Class to sample and hold probabilities of a general discrete system.
   SortedDiscreteSystem:
       Class to sample and hold probabilites for a system where the input
-      output mapping is available already sorted.
+      output mapping is available already sorted by output.
 
 """
 __author__ = 'Robin Ince'
-__version__ = '0.3.4dev'
+__version__ = '0.4.0dev'
 
-from pyentropy import *
+from pyentropy.systems import DiscreteSystem, SortedDiscreteSystem
+from pyentropy.utils import (prob, decimalise, nsb_entropy, quantise,
+                             dec2base, base2dec)
