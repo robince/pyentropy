@@ -88,7 +88,8 @@ import scipy.optimize as opt
 #except:
     #HAS_UMFPACK = False
 HAS_UMFPACK = False
-from scipy.sparse.linalg import spsolve
+from scipy.sparse.linalg import spsolve, use_solver
+use_solver(useUmfpack=False)
 from utils import dec2base, base2dec
 import ConfigParser
 
@@ -133,7 +134,7 @@ def get_data_dir():
 # AmariSolve class
 #
 class AmariSolve:
-    """A class for computing Amari maximum-entropy solutions.
+    """A class for computing maximum-entropy solutions
    
     Methods
     -------
@@ -141,14 +142,12 @@ class AmariSolve:
         constructor generates/loads transformation matrix
     solve(Pr,k) : 
         maxent solution of a distribution
-    theta_from_p(P), eta_from_p(P) :
+    theta_from_p(P), eta_from_p(P), p_from_theta(theta) :
         Amari coordinate transformations
-    si2un(x), un2si(x) : 
-        signed integer/unsigned integer conversions
 
     """
 
-    def __init__(self, n, m, filename='a_', local=False):
+    def __init__(self, n, m, filename='a_', local=False, confirm=True):
         """Setup transformation matrix for given parameter set.
 
         If existing matrix file is found, load the (sparse) transformation
@@ -179,7 +178,10 @@ class AmariSolve:
         self.n = n
         self.m = m
         self.l = (m-1)/2
-        self.dim = (m**n) - 1
+        # full dimension of probability space
+        self.fdim = m**n
+        # dimension of arrays (-1 dof)
+        self.dim = self.fdim - 1
 
         filename = filename + "n%im%i"%(n,m) 
         if local:
@@ -195,7 +197,7 @@ class AmariSolve:
             loaddict = sio.loadmat(self.filename+'.mat')
             self.A = loaddict['A'].tocsc()
             self.order_idx = loaddict['order_idx'].squeeze()
-        else:
+        elif confirm:
             inkey = raw_input("Existing .mat file not found..." +
                               "Generate matrix? (y/n)")
             if inkey == 'y':
@@ -205,19 +207,20 @@ class AmariSolve:
                 print "File not found and generation aborted..."
                 print "Do not use this class instance."
                 return None
+        else:
+            # just generate it without confirmation
+            self._generate_matrix()
 
+        self.B = self.A.T
         # umfpack factorisation of matrix
         if HAS_UMFPACK:
             self._umfpack()
 
         return None
 
-
     def _umfpack(self):
-        self.B = self.A.T
         self.umf = um.UmfpackContext()
         self.umf.numeric(self.B)
-
 
     def _calculate_orders(self):
         k = self.k
@@ -245,7 +248,6 @@ class AmariSolve:
         y = self.order_length[:k]
         self.Annz = np.sum(x*y.T)
         
-
     def _generate_matrix(self):
         """Generate A matrix if required"""
         k = self.k
@@ -268,7 +270,6 @@ class AmariSolve:
         self.A = self.A.tocsc()
         savedict = {'A':self.A, 'order_idx':self.order_idx}
         sio.savemat(self.filename, savedict)
-
 
     def _recloop(self, order, depth, alpha, pos, n, m, blocksize=None):
         terms = self.terms
@@ -314,7 +315,6 @@ class AmariSolve:
                 else:
                     self._recloop(order, depth+1, alpha_new, pos_new, n, m, blocksize=blocksize)
 
-
     def solve(self,Pr,k,eta_given=False,ic_offset=-0.01, **kwargs):
         """Find Amari maxent distribution for a given order k
         
@@ -325,6 +325,20 @@ class AmariSolve:
         Returns theta vector of Amari solution.
 
         """
+        if len(Pr.shape) != 1:
+            raise ValueError, "Input Pr should be a 1D array"
+        if not eta_given and Pr.size != self.fdim:
+            raise ValueError, "Input probability vector must have length fdim (m^n)"
+        if eta_given:
+            if Pr.size != self.dim:
+                raise ValueError, "Input eta vector must have length dim (m^n -1)"
+        else:
+            if Pr.size != self.fdim:
+                raise ValueError, "Input probability vector must have length fdim (m^n)"
+            if not np.allclose(Pr.sum(), 1.0):
+                raise ValueError, "Input probability vector must sum to 1"
+
+
         l       = self.order_idx[k].astype(int)
         theta0  = np.zeros(self.order_idx[-1]-self.order_idx[k]-1)
         x0      = np.zeros(l)+ic_offset 
@@ -337,7 +351,7 @@ class AmariSolve:
         if eta_given:
             eta_sampled = Pr[:l]
         else:
-            eta_sampled = Asmall.matvec(Pr)
+            eta_sampled = Asmall.matvec(Pr[1:])
 
         if jacobian:
             self.optout = opt.fsolve(sf, x0, (Asmall,Bsmall,eta_sampled, l), 
@@ -359,14 +373,15 @@ class AmariSolve:
             print "njev: %d" % self.optout[1]['njev']
         except KeyError:
             print ""
-        return self._p_from_theta(np.r_[the_k,theta0])
-
+        Psolve = np.zeros(self.fdim)
+        Psolve[1:] = self._p_from_theta(np.r_[the_k,theta0])
+        Psolve[0] = 1.0 - Psolve.sum()
+        return Psolve
 
     def _solvefunc(self, theta_un, Asmall, Bsmall, eta_sampled, l):
         b = np.exp(Bsmall.matvec(theta_un))
         y = eta_sampled - ( Asmall.matvec(b) / (b.sum()+1) )
         return y
-
 
     def _jacobian(self, theta, Asmall, Bsmall, eta_sampled, l):
         x = np.exp(Bsmall.matvec(theta))
@@ -383,9 +398,16 @@ class AmariSolve:
         return J
 
     def _p_from_theta(self, theta):
+        """Internal version - stays in dim space (missing p[0])"""
         pnorm = lambda p: ( p / (p.sum()+1) )
         return pnorm(np.exp(self.A.T.matvec(theta)))
 
+    def p_from_theta(self, theta):
+        """Return full fdim p-vector from dim lenght theta"""
+        p = np.zeros(self.fdim)
+        p[1:] = self._p_from_theta(theta)
+        p[0] = 1.0 - p.sum()
+        return p
 
     def theta_from_p(self, p):
         b = np.log(p[1:]) - np.log(p[0])
@@ -397,23 +419,8 @@ class AmariSolve:
         # add theta(0) or not?
         return theta
 
-
     def eta_from_p(self, p):
         return self.A.matvec(p[1:])
-
-
-    def si2un(self, x):
-        """Signed to unsigned integer conversion (in place)"""
-        if (x.max() > self.l) or (x.min() < -self.l):
-            raise ValueError, "Badly formed input data"
-        x[np.where(x<0)] += self.m
-
-
-    def un2si(self, x):
-        "Unsigned to signed integer conversion (in place)"
-        if (x.max() > self.m-1) or (x.min() < 0):
-            raise ValueError, "Badly formed input data"
-        x[np.where(x>self.l)] -= self.m
 
 
 def inscol(x,h,n):
