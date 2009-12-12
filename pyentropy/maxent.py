@@ -295,7 +295,7 @@ class AmariSolve:
                     # special case for highest order
                     # (can't insert columns into empty terms array)
                     if order==n:
-                        cols = base2dec(np.matrix(alpha_new),m)[0]-1
+                        cols = base2dec(np.atleast_2d(alpha_new),m)[0]-1
                         A[self.row_counter, cols] = 1
                     else:    
                         # add columns (insert and add to sparse)
