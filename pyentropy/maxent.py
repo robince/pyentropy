@@ -76,6 +76,7 @@ import os
 import sys
 import cPickle
 import numpy as np
+import scipy as sp
 import scipy.io as sio
 import scipy.sparse as sparse
 import scipy.optimize as opt
@@ -226,11 +227,12 @@ class AmariSolve:
         
         # Calculate the length of each order
         self.order_idx       = np.zeros(n+2, dtype=int) 
-        self.order_length    = np.zeros(n+1)
+        self.order_length    = np.zeros(n+1, dtype=int)
         self.row_counter     = 0
 
         for ordi in xrange(n+1):    
-            self.order_length[ordi] = nchoosek(n, ordi+1) * ((m-1)**(ordi+1))
+            self.order_length[ordi] = (sp.comb(n, ordi+1, exact=1) * 
+                                        ((m-1)**(ordi+1)))
             self.order_idx[ordi] = self.row_counter
             self.row_counter += self.order_length[ordi]
 
@@ -412,18 +414,6 @@ class AmariSolve:
         if (x.max() > self.m-1) or (x.min() < 0):
             raise ValueError, "Badly formed input data"
         x[np.where(x>self.l)] -= self.m
-
-
-def factorial(N):
-    y = 1
-    for i in range(1,N+1):
-        y = y * i
-    return y
-
-
-def nchoosek(N,k):
-    y=factorial(N)/factorial(k)/factorial(N-k)
-    return y
 
 
 def inscol(x,h,n):
