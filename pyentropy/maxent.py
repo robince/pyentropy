@@ -253,7 +253,7 @@ class AmariSolve:
 
         self._calculate_orders()
 
-        self.A = sparse.lil_matrix((self.order_idx[k],dim))
+        self.A = sparse.dok_matrix((self.order_idx[k],dim))
 
         self.row_counter = 0
         for ordi in xrange(k):
