@@ -15,9 +15,6 @@
 
 from __future__ import division
 import numpy as np
-import os
-from tempfile import NamedTemporaryFile
-import subprocess
 from utils import (prob, _probcount, decimalise, pt_bayescount, 
                    nsb_entropy, dec2base)
 
