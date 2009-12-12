@@ -18,8 +18,6 @@ import numpy as np
 from utils import (prob, _probcount, decimalise, pt_bayescount, 
                    nsb_entropy, dec2base)
 
-eps = np.finfo(np.float).eps
-
 class BaseSystem:
     """Base functionality for entropy calculations"""
 

@@ -47,15 +47,14 @@ def prob(x, n, method='naive'):
         Pr[i] = P(x=i)
 
     """
-    if (not np.issubdtype(x.dtype, np.int)): 
+    if not np.issubdtype(x.dtype, np.integer): 
         raise ValueError, "Input must be of integer type"
-
+    if x.max() > n-1:
+        raise ValueError, "Input contains values that are too large"
+    
     C = np.bincount(x)
-    r = C.size
-    if r < n:   # resize if any responses missed
+    if C.size < n:   # resize if any responses missed
         C.resize((n,))
-        C[n:]=0
-
     return _probcount(C, n, method)
 
 
@@ -130,7 +129,7 @@ def pt_bayescount(Pr, Nt):
     dim = Pr.size
 
     # non zero probs only
-    PrNZ = Pr[Pr>eps]
+    PrNZ = Pr[Pr>np.finfo(np.float).eps]
     Rnaive = PrNZ.size
     
     R = Rnaive
@@ -206,12 +205,17 @@ def dec2base(x, b, digits):
     """Convert decimal value to a row of values representing it in a 
     given base.
     
-    Input x must be a [t,1] column vector (t trials) of integer values
+    Input x must be a [t,1] or 1D array (t trials) of integer values
 
     """
+    if not np.issubdtype(x.dtype, np.integer):
+        raise ValueError, "Input x must be integer"
+    if len(x.shape)==1:
+        # 1D vector
+        x = np.reshape(x,(x.size,1))
     xs = x.shape
     if xs[1] != 1:
-        raise ValueError, "Input x must be a column vector!"
+        raise ValueError, "Input x must be a 1D array or column vector!"
 
     power = np.ones((xs[0],1)) * (b ** np.c_[digits-1:-0.5:-1,].T)
     x = np.tile(x,(1,digits))
