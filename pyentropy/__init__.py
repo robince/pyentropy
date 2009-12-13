@@ -32,8 +32,8 @@ Classes
 __author__ = 'Robin Ince'
 __version__ = '0.4.0dev'
 
-from pyentropy.systems import DiscreteSystem, SortedDiscreteSystem
-from pyentropy.utils import (prob, decimalise, nsb_entropy, quantise,
+from systems import DiscreteSystem, SortedDiscreteSystem
+from utils import (prob, decimalise, nsb_entropy, quantise,
                              dec2base, base2dec)
 
 from numpy.testing import Tester
