@@ -23,9 +23,14 @@ import numpy as np
 from tempfile import NamedTemporaryFile
 import os
 import subprocess
+from numpy.ma.core import _MaskedUnaryOperation, _DomainGreater
+import numpy.core.umath as umath
 
-ent = lambda p: -np.ma.array(p*np.log2(p),copy=False,
-            mask=(p<=np.finfo(np.float).eps)).sum(axis=0)
+malog2 = _MaskedUnaryOperation(umath.log2, 1.0, _DomainGreater(0.0))
+
+def ent(p):
+    mp = np.ma.array(p,copy=False,mask=(p<=np.finfo(np.float).eps))
+    return -(mp*malog2(mp)).sum(axis=0)
 
 
 def prob(x, m, method='naive'):
