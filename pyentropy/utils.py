@@ -28,15 +28,15 @@ ent = lambda p: -np.ma.array(p*np.log2(p),copy=False,
             mask=(p<=np.finfo(np.float).eps)).sum(axis=0)
 
 
-def prob(x, n, method='naive'):
+def prob(x, m, method='naive'):
     """Sample probability of integer sequence.
 
     Parameters
     ----------
     x : int array
         integer input sequence
-    n : int
-        dimension of input sequence (max(x)<r)
+    m : int
+        dimension of input sequence (max(x)<m)
     method: {'naive', 'kt', 'beta:x','shrink'}
         Sampling method to use. 
 
@@ -49,13 +49,13 @@ def prob(x, n, method='naive'):
     """
     if not np.issubdtype(x.dtype, np.integer): 
         raise ValueError, "Input must be of integer type"
-    if x.max() > n-1:
+    if x.max() > m-1:
         raise ValueError, "Input contains values that are too large"
     
     C = np.bincount(x)
-    if C.size < n:   # resize if any responses missed
-        C.resize((n,))
-    return _probcount(C, n, method)
+    if C.size < m:   # resize if any responses missed
+        C.resize((m,))
+    return _probcount(C, x.size, method)
 
 
 def _probcount(C, N, method='naive'):
@@ -66,7 +66,7 @@ def _probcount(C, N, method='naive'):
     C : int array
         integer vector of bin counts
     N : int
-        number of bins
+        number of trials
     method: {'naive', 'kt', 'beta:x','shrink'}
         Sampling method to use. 
 

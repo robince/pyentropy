@@ -16,7 +16,7 @@
 from __future__ import division
 import numpy as np
 from utils import (prob, _probcount, decimalise, pt_bayescount, 
-                   nsb_entropy, dec2base)
+                   nsb_entropy, dec2base, ent)
 
 class BaseSystem:
     """Base functionality for entropy calculations"""
