@@ -7,5 +7,5 @@ setup(name='pyentropy',
       author=pyentropy.__author__,
       author_email='pyentropy@robince.net',
       url='http://code.google.com/p/pyentropy',
-      packages=['pyentropy']
+      packages=['pyentropy','pyentropy.tests']
       )
