@@ -16,21 +16,27 @@ import numpy as np
 from numpy.testing import *
 from pyentropy.maxent import *
 
-# remove cached file
-try: 
-    os.remove(os.path.join(get_data_dir(),'a_n%im%i.mat'%(3,4)))
-except OSError:
-    pass
-# create from scratch
-# need to check both created from scratch and loaded
-# to catch any problems with savemat/loadmat round trip
-a = AmariSolve(3,4,confirm=False)
-# load
-a_loaded = AmariSolve(3,4)
+def setup():
+    global a, a_loaded, p
+    # remove cached file
+    try: 
+        os.remove(os.path.join(get_data_dir(),'a_n%im%i.mat'%(3,4)))
+    except OSError:
+        pass
+    # create from scratch
+    # need to check both created from scratch and loaded
+    # to catch any problems with savemat/loadmat round trip
+    a = AmariSolve(3,4,confirm=False)
+    # load
+    a_loaded = AmariSolve(3,4)
 
-# a random distribution
-p = np.random.rand(64)
-p /= p.sum()
+    # a random distribution
+    p = np.random.rand(64)
+    p /= p.sum()
+
+def teardown():
+    global a, a_loaded, p
+    del a, a_loaded, p    
 
 def test_theta_roundtrip():
     assert_array_almost_equal(p, a.p_from_theta(a.theta_from_p(p)))
