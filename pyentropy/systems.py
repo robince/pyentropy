@@ -255,47 +255,74 @@ class BaseSystem:
         else:
             self._calc_ents(method, sampling, methods)
 
-    def I(self):
+    def I(self, corr=None):
         """Convenience function to compute mutual information
         
         Must have already computed required entropies ['HX', 'HXY']
+
+        :Parameters:
+          corr : str, optional
+            If provided use the entropies from this correction rather than
+            the default values in self.H
         
         """
         try:
-            I = self.H['HX'] - self.H['HXY']
+            if corr is not None:
+                H = getattr(self,'H_%s'%corr)
+            else:
+                H = self.H
+            I = H['HX'] - H['HXY']
         except (KeyError, AttributeError):
             print "Error: must have computed HX and HXY for" + \
             "mutual information"
             return
         return I
 
-    def Ish(self):
+    def Ish(self, corr=None):
         """Convenience function to compute shuffled mutual information
         estimate
         
         Must have already computed required entropies
         ['HX', 'HiXY', 'HshXY', 'HXY']
+
+        :Parameters:
+          corr : str, optional
+            If provided use the entropies from this correction rather than
+            the default values in self.H
         
         """
         try:
-            I = self.H['HX'] - self.H['HiXY'] + self.H['HshXY'] - self.H['HXY']
+            if corr is not None:
+                H = getattr(self,'H_%s'%corr)
+            else:
+                H = self.H
+            I = H['HX'] - H['HiXY'] + H['HshXY'] - H['HXY']
         except (KeyError, AttributeError):
             print "Error: must have computed HX, HiXY, HshXY and HXY" + \
                     "for shuffled mutual information estimator"
             return
         return I
 
-    def Ishush(self):
+    def Ishush(self, corr=None):
         """Convenience function to compute full shuffled mutual information
         estimate
         
         Must have already computed required entropies
         ['HX', 'SiHXi', 'HshX', 'HiXY', 'HshXY', 'HXY']
+
+        :Parameters:
+          corr : str, optional
+            If provided use the entropies from this correction rather than
+            the default values in self.H
         
         """
         try:
-            I = (self.H['HX'] - self.H['HshX'] + self.H['SiHXi'] -
-                    self.H['HiXY'] + self.H['HshXY'] - self.H['HXY'])
+            if corr is not None:
+                H = getattr(self,'H_%s'%corr)
+            else:
+                H = self.H
+            I = (H['HX'] - H['HshX'] + H['SiHXi'] -
+                    H['HiXY'] + H['HshXY'] - H['HXY'])
         except (KeyError, AttributeError):
             print "Error: must have computed HX, HshX, SiHXi, " + \
                 "HiXY, HshXY and HXY for shuffled mutual information estimator"
