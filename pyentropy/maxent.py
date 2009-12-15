@@ -38,7 +38,8 @@ following format::
     [maxent]
     cache_dir = /path/to/cache
     
-amari.get_config_file() will show where it is looking for the config file.
+:func:`pyentropy.maxent.get_config_file()` will show where it is looking for the config
+file.
 
 The probability vectors for a finite-alphabet space of ``n`` variables with
 ``m`` possible values is a length ``m**n-1`` vector ordered such that the 
@@ -128,6 +129,9 @@ class AmariSolve:
     An instance then exposes a solve method which returns the maximum entropy
     distribution preserving marginal constraints of the input probability 
     vector up to a given order k. 
+
+    This class computed the full transformation matrix and so can compute 
+    solutions for any order.
    
     """
 
