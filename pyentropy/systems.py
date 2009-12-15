@@ -21,12 +21,12 @@ from utils import (prob, _probcount, decimalise, pt_bayescount,
                    nsb_entropy, dec2base, ent)
 
 class BaseSystem:
-    """Base functionality for entropy calculations"""
+    """Base functionality for entropy calculations common to all systems"""
 
     def _calc_ents(self, method, sampling, methods):
         """Main entropy calculation function for non-QE methods"""
 
-        self.sample(method=sampling)
+        self._sample(method=sampling)
         pt = (method == 'pt') or ('pt' in methods)
         plugin = (method == 'plugin') or ('plugin' in methods)
         nsb = (method == 'nsb') or ('nsb' in methods)
@@ -68,6 +68,7 @@ class BaseSystem:
             self.H = self.H_nsb
 
     def _calc_pt_plugin(self, pt):
+        """Calculate direct entropies and apply PT correction if required """
         calc = self.calc
         pt_corr = lambda R: (R-1)/(2*self.N*np.log(2))
         self.H_plugin = {}
@@ -137,9 +138,9 @@ class BaseSystem:
             if pt:
                 # no PT for ChiXY1
                 self.H_pt['ChiXY1'] = H
-                
     
     def _calc_nsb(self):
+        """Calculate NSB corrected entropy"""
         calc = self.calc
         # TODO: 1 external program call if all y have same number of trials
         self.H_nsb = {}
@@ -175,35 +176,48 @@ class BaseSystem:
                             calc=['HX','HXY'], **kwargs):
         """Calculate entropies of the system.
 
-        Parameters
-        ----------
-        method : {'plugin', 'pt', 'qe', 'nsb'}
-            Bias correction method to use.
-        sampling : {'naive', 'kt', 'beta:x'}
-            Sampling method to use. See docstring of sampling function for 
-            further details
-        calc :  {'HX','HY','HXY','SiHXi','HiX','HiXY','HshXY','ChiX','HXY1','ChiXY1'}
-            List of entropies to compute.
+        :Parameters:
+          method : {'plugin', 'pt', 'qe', 'nsb'}
+            Bias correction method to use
+          sampling : {'naive', 'kt', 'beta:x'}, optional
+            Sampling method to use. 'naive' is the standard histrogram method.
+            'beta:x' is for an add-constant beta estimator, with beta value
+            following the colon eg 'beta:0.01' [1]_. 'kt' is for the 
+            Krichevsky-Trofimov estimator [2]_, which is equivalent to 
+            'beta:0.5'.
 
-        Other Parameters
-        ----------------
-        qe_method : {'pt', 'nsb'}
-            Method argument to be passed for QE calculation. Allows combination
-            of QE with other corrections.
-        methods : list
-            If present, method argument will be ignored, and all corrections in 
-            list will be calculated. Used for comparing results of different methods
-            with one calculation pass.
+          calc : list of strs
+            List of entropy values to calculate from ('HX', 'HY', 'HXY', 
+            'SiHXi', 'HiX', 'HshX', 'HiXY', 'HshXY', 'ChiX', 'HXY1','ChiXY1')
 
-        Output
-        ------
-        self.H : dict
+        :Keywords:
+          qe_method : {'plugin', 'pt', 'nsb'}, optional
+            Method argument to be passed for QE calculation ('pt', 'nsb'). 
+            Allows combination of QE with other corrections.
+          methods : list of strs, optional
+            If present, method argument will be ignored, and all corrections 
+            in the list will be calculated. Use to comparing results of 
+            different methods with one calculation pass.
+
+        :Returns:
+          self.H : dict
             Dictionary of computed values.
+          self.H_method : dict
+            Dictionary of computed values using 'method'.
 
         Notes
         -----
-        - If the PT method is chosen with outputs 'HiX' or 'ChiX' no bias 
+        * If the PT method is chosen with outputs 'HiX' or 'ChiX' no bias 
           correction will be performed for these terms.
+
+        References
+        ----------
+        .. [1] T. Schurmann and P. Grassberger, "Entropy estimation of 
+           symbol sequences," Chaos,vol. 6, no. 3, pp. 414--427, 1996.
+        .. [2] R. Krichevsky and V. Trofimov, "The performance of universal 
+           encoding," IEEE Trans. Information Theory, vol. 27, no. 2, 
+           pp. 199--207, Mar. 1981. 
+
 
         """
         self.calc = calc
@@ -230,7 +244,6 @@ class BaseSystem:
         if 'HshXY' in calc:
             self.Xsh = np.zeros(self.X.shape,dtype=np.int)
 
-
         if (method == 'qe') or ('qe' in methods):
             # default to plugin method if not specified
             qe_method = kwargs.get('qe_method','plugin')
@@ -243,7 +256,11 @@ class BaseSystem:
             self._calc_ents(method, sampling, methods)
 
     def I(self):
-        """Convenience function to compute mutual information"""
+        """Convenience function to compute mutual information
+        
+        Must have already computed required entropies ['HX', 'HXY']
+        
+        """
         try:
             I = self.H['HX'] - self.H['HXY']
         except (KeyError, AttributeError):
@@ -253,12 +270,35 @@ class BaseSystem:
         return I
 
     def Ish(self):
-        """Convenience function for shuffled mutual information"""
+        """Convenience function to compute shuffled mutual information
+        estimate
+        
+        Must have already computed required entropies
+        ['HX', 'HiXY', 'HshXY', 'HXY']
+        
+        """
         try:
             I = self.H['HX'] - self.H['HiXY'] + self.H['HshXY'] - self.H['HXY']
         except (KeyError, AttributeError):
             print "Error: must have computed HX, HiXY, HshXY and HXY" + \
                     "for shuffled mutual information estimator"
+            return
+        return I
+
+    def Ishush(self):
+        """Convenience function to compute full shuffled mutual information
+        estimate
+        
+        Must have already computed required entropies
+        ['HX', 'SiHXi', 'HshX', 'HiXY', 'HshXY', 'HXY']
+        
+        """
+        try:
+            I = (self.H['HX'] - self.H['HshX'] + self.H['SiHXi'] -
+                    self.H['HiXY'] + self.H['HshXY'] - self.H['HXY'])
+        except (KeyError, AttributeError):
+            print "Error: must have computed HX, HshX, SiHXi, " + \
+                "HiXY, HshXY and HXY for shuffled mutual information estimator"
             return
         return I
 
@@ -329,51 +369,39 @@ class DiscreteSystem(BaseSystem):
     """Class to hold probabilities and calculate entropies of 
     a discrete stochastic system.
 
-    Attributes
-    ----------
-    
-    PXY[X_dim, Y_dim] :
-        Conditional probability vectors on decimalised space P(X|Y). PXY[:,i] 
-        is X probability distribution conditional on Y == i.
-    PX[X_dim] :
+    :Attributes:
+      PXY : (X_dim, Y_dim)
+        Conditional probability vectors on decimalised space P(X|Y). 
+        ``PXY[:,i]`` is X probability distribution conditional on ``Y==i``.
+      PX : (X_dim,) 
         Unconditional decimalised X probability.
-    PY[Y_dim] :
+      PY : (Y_dim,)
         Unconditional decimalised Y probability.
-    PXi[X_m,X_n] :
+      PXi : (X_m, X_n)
         Unconditional probability distributions for individual X components. 
-        PXi[i,j] = P(X_i==j)
-    PXiY[X_m,X_n,Y_dim] :
+        ``PXi[i,j] = P(X_i==j)``
+      PXiY : (X_m, X_n, Y_dim)
         Conditional probability distributions for individual X compoenents.
-        PXiY[i,j,k] = P(X_i==j | Y==k)
-    PiX[X_dim] :
-        Pind(X) = <Pind(X|y)>_y
-
-    Methods
-    -------
-
-    __init__(X, X_dims, Y, Y_dims) :
-        Check and assign inputs.
-    calculate_entropies(method='plugin', sampling='naive') :
-        Calculate entropies and perform bias correction.
-    sample(input, output, method='naive') :
-        Sample probabilities of system.
+        ``PXiY[i,j,k] = P(X_i==j | Y==k)``
+      PiX : (X_dim,)
+        ``Pind(X) = <Pind(X|y)>_y``
 
     """
 
     def __init__(self, X, X_dims, Y, Y_dims, qe_shuffle=True):
         """Check and assign inputs.
 
-        Parameters
-        ----------
-        X[X_n,t] : int array
-            Array of measured input values.
-        X_dims : tuple (n,m)
+        :Parameters:
+          X : (X_n, t)  int array
+            Array of measured input values. X_n variables in X space, t trials
+          X_dims : tuple (n, m)
             Dimension of X (input) space; length n, base m words
-        Y[Y_n,t] : int array
-            Array of corresponding measured output values.
-        Y_dims : tuple (n,m)
+          Y : (Y_n, t) int array
+            Array of corresponding measured output values. Y_n variables in Y
+            space, t trials
+          Y_dims : tuple (n ,m)
             Dimension of Y (output) space; length n, base m words
-        qe_shuffle : bool (True)
+          qe_shuffle : {True, False}, optional
             Set to False if trials already in random order, to skip shuffling
             step in QE. Leave as True if trials have structure (ie one stimuli 
             after another).
@@ -396,12 +424,11 @@ class DiscreteSystem(BaseSystem):
         self.sampled = False
         self.calc = []
         
-    def sample(self, method='naive'):
+    def _sample(self, method='naive'):
         """Sample probabilities of system.
 
         Parameters
         ----------
-
         method : {'naive', 'beta:x', 'kt'}, optional
             Sampling method to use. 'naive' is the standard histrogram method.
             'beta:x' is for an add-constant beta estimator, with beta value
@@ -437,6 +464,7 @@ class DiscreteSystem(BaseSystem):
         # unconditional probabilities
         if ('HX' in calc) or ('ChiX' in calc):
             self.PX = prob(d_X, self.X_dim, method=method)
+            """test docstring fpr PX"""
         if any([c in calc for c in ['HXY','HiX','HiXY','HY']]):
             self.PY = prob(d_Y, self.Y_dim, method=method)
         if 'SiHXi' in calc:
@@ -545,21 +573,35 @@ class SortedDiscreteSystem(DiscreteSystem):
     stochastic system when the inputs are available already sorted 
     by stimulus.
 
-    Inherits from DiscreteSystem.
+    :Attributes:
+      PXY : (X_dim, Y_dim)
+        Conditional probability vectors on decimalised space P(X|Y). 
+        ``PXY[:,i]`` is X probability distribution conditional on ``Y==i``.
+      PX : (X_dim,) 
+        Unconditional decimalised X probability.
+      PY : (Y_dim,)
+        Unconditional decimalised Y probability.
+      PXi : (X_m, X_n)
+        Unconditional probability distributions for individual X components. 
+        ``PXi[i,j] = P(X_i==j)``
+      PXiY : (X_m, X_n, Y_dim)
+        Conditional probability distributions for individual X compoenents.
+        ``PXiY[i,j,k] = P(X_i==j | Y==k)``
+      PiX : (X_dim,)
+        ``Pind(X) = <Pind(X|y)>_y``
 
     """
     def __init__(self, X, X_dims, Y_m, Ny):
         """Check and assign inputs.
 
-        Parameters
-        ----------
-        X[X_n,t] : int array
-            Array of measured input values.
-        X_dims : tuple (n,m)
+        :Parameters:
+          X : (X_n, t) int array
+            Array of measured input values. X_n variables in X space, t trials
+          X_dims : tuple (n,m)
             Dimension of X (input) space; length n, base m words
-        Y_m : int 
+          Y_m : int 
             Finite alphabet size of single variable Y
-        Ny[Y_m] : int array
+          Ny : (Y_m,) int array
             Array of number of trials available for each stimulus. This should
             be ordered the same as the order of X w.r.t. stimuli. 
             Y_t.sum() = X.shape[1]
@@ -591,7 +633,7 @@ class SortedDiscreteSystem(DiscreteSystem):
         if (self.Ny.sum() != self.N):
             raise ValueError, "Ny.sum() must equal number of X input trials"
 
-    def sample(self, method='naive'):
+    def _sample(self, method='naive'):
         """Sample probabilities of system.
 
         Parameters

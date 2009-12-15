@@ -14,10 +14,9 @@
 #    along with pyEntropy. If not, see <http://www.gnu.org/licenses/>.
 #
 #    Copyright 2009, 2010 Robin Ince
-""" utils.py
-
-This contains utility functions for working with discrete probability
-distributions
+"""Utility functions for working with discrete probability
+distributions. These functions are exposed in the top-level pyentropy
+namespace.
 
 """
 from __future__ import division
@@ -38,18 +37,16 @@ def ent(p):
 def prob(x, m, method='naive'):
     """Sample probability of integer sequence.
 
-    Parameters
-    ----------
-    x : int array
+    :Parameters:
+      x : int array
         integer input sequence
-    m : int
-        dimension of input sequence (max(x)<m)
-    method: {'naive', 'kt', 'beta:x','shrink'}
+      m : int
+        alphabet size of input sequence (max(x)<m)
+      method: {'naive', 'kt', 'beta:x','shrink'}
         Sampling method to use. 
 
-    Returns
-    -------
-    Pr : float array
+    :Returns:
+      Pr : float array
         array representing probability distribution
         Pr[i] = P(x=i)
 
@@ -68,13 +65,12 @@ def prob(x, m, method='naive'):
 def _probcount(C, N, method='naive'):
     """Estimate probability from a vector of bin counts
     
-    Parameters
-    ----------
-    C : int array
+    :Parameters:
+      C : int array
         integer vector of bin counts
-    N : int
+      N : int
         number of trials
-    method: {'naive', 'kt', 'beta:x','shrink'}
+      method: {'naive', 'kt', 'beta:x','shrink'}
         Sampling method to use. 
 
     """
@@ -127,8 +123,15 @@ def pt_bayescount(Pr, Nt):
     """Compute the support for analytic bias correction using the 
     Bayesian approach of Panzeri and Treves (1996)
     
-    Pr - probability
-    Nt - number of trials
+    :Parameters:
+      Pr : 1D aray
+        Probability vector
+      Nt : int
+        Number of trials
+
+    :Returns:
+      R : int
+        Bayesian estimate of support
     
     """
     
@@ -167,10 +170,15 @@ def nsb_entropy(P, N, dim):
     """Calculate NSB entropy of a probability distribution using
     external nsb-entropy program.
 
-    Inputs:
-    P - probability distribution vector
-    N - total number of trials
-    dim - full dimension of space
+    Required `nsb-entropy` installed on system path.
+
+    :Parameters:
+      P : 1D array
+        Probability distribution vector
+      N : int
+        Total number of trials
+      dim : int 
+        Full dimension of space
     
     """
     
@@ -212,7 +220,16 @@ def dec2base(x, b, digits):
     """Convert decimal value to a row of values representing it in a 
     given base.
     
-    Input x must be a [t,1] or 1D array (t trials) of integer values
+    :Parameters:
+      x : (t,) or (t,1) int array
+        Array of decimilised values
+      b : int
+        Base for convergence (finite alphabet size)
+      digits : int
+        Length of output word for each trial
+
+    :Returns:
+     y : (t, digits)
 
     """
     if not np.issubdtype(x.dtype, np.integer):
@@ -230,7 +247,17 @@ def dec2base(x, b, digits):
     return y.astype(int)
 
 def base2dec(x, b):
-    """Convert a numerical vector to its decimal value in a given base.
+    """Convert base-b words to decimal values.
+
+    :Parameters:
+      x : (t, n) int array
+        Array of t length-n base-b words
+      b : int
+        Base (size of finite alphabet)
+
+    :Returns:
+      d_x: (t,)
+        Array of decimalised values
     
     Note, this is the same as decimalise except input x is ordered 
     differently (here x[t,n] - ie columns are trials).
@@ -238,26 +265,28 @@ def base2dec(x, b):
     """
     xs = x.shape
     z = b**np.arange((xs[1]-1),-0.5,-1)
-    y = np.dot(x, z)
-    return y.astype(int)
+    d_x = np.dot(x, z)
+    return d_x.astype(int)
 
 
-def decimalise(x, n, m):
-    """Decimalise discrete response.
+def decimalise(x, n, b):
+    """Convert base-b words to decimal values
 
-    Parameters
-    ----------
-    x[n,t]: int array
-        Vector of samples. Each sample t, is a length-n base-m word.
-    n, m : int
-        Dimensions of space.
+    :Parameters:
+      x : (n, t) int array
+        Array of t length-n base-b words
+      b : int
+        Base (size of finite alphabet)
+
+    :Returns:
+      d_x: (t,)
+        Array of decimalised values
 
     """
     if x.shape[0] != n or x.max() > m-1:
         raise ValueError, "Input vector x doesnt match parameters"
     powers = m**np.arange(n-1,-0.5,-1,dtype=int)
     d_x = np.dot(x.T,powers).astype(int)
-
     return d_x
 
 
@@ -265,13 +294,14 @@ def quantise(input, m, uniform='sampling', minmax=None,
              centers=True):
     """ Quantise 1D input vector into m levels (unsigned)
 
-    uniform : {'sampling','bins'}
+    :Parameters:
+      uniform : {'sampling','bins'}
         Determine whether quantisation is uniform for sampling (equally 
         occupied bins) or the bins have uniform widths
-    minmax : tuple (min,max)
+      minmax : tuple (min,max)
         Specify the range for uniform='bins' quantisation, rather than using
         min/max of input
-    centers : bool
+      centers : {True, False}
         Return vector of bin centers instead of bin bounds
 
     """

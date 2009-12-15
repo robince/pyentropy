@@ -15,10 +15,11 @@
 #
 #    Copyright 2009, 2010 Robin Ince
 """
-maxent.py -   code for Finite-Alphabet Maximum Entropy solutions using a 
-                coordinate transform method
+Module for computing finite-alphabet maximum entropy solutions using a 
+coordinate transform method
 
 For details of the method see:
+
     Ince, R. A. A., Petersen, R. S., Swan, D. C., Panzeri, S., 2009
     "Python for Information Theoretic Analysis of Neural Data", 
     Frontiers in Neuroinformatics 3:4 doi:10.3389/neuro.11.004.2009
@@ -26,52 +27,34 @@ For details of the method see:
     
 If you use this code in a published work, please cite the above paper.
 
-Basic Usage
------------
+The generated transformation matrices for a given set of parameters are 
+stored to disk. The default location for the cache is a ``.pyentropy`` 
+(``_pyentropy`` on windows) directory in the users home directory. To 
+override this and use a custom location (for example to share the folder 
+between users) you can put a configuration file ``.pyentropy.cfg`` 
+(``pyentropy.cfg`` on windows) file in the home directory with the 
+following format::
 
-# import module
-from pyentropy.maxent import AmariSolve
+    [maxent]
+    cache_dir = /path/to/cache
+    
+amari.get_config_file() will show where it is looking for the config file.
 
-# setup solution for parameters 
-# n = number of variables
-# m = finite alphabet
-a = AmariSolve(n=4,m=5)
+The probability vectors for a finite-alphabet space of ``n`` variables with
+``m`` possible values is a length ``m**n-1`` vector ordered such that the 
+value of the index is equal to the decimal value of the input state 
+represented, when interpreted as a base m, length n word. eg for n=3,m=3::
 
-# solve maxent preserving marginals of given order
-P2 = a.solve(P,k=2)
-
-- P is the probability vector (length m^n -1) of the measured distribution
-  whose marginals act as the contraints on the maximum entropy solution.
-  P is ordered such that the value of the index is equal to the decimal 
-  value of the input state represented, when interpreted as a base m, length n
-  word. eg for n=3,m=3:
     P[0] = P(0,0,0)
     P[1] = P(0,0,1)
     P[2] = P(0,0,2)
     P[3] = P(0,1,0)
     P[4] = P(0,1,1) etc.
-  This allows efficient vectorised conversion between probability index and 
-  response word using base2dec, dec2base. The output is in the same format.
 
-- k is the order of the solution (order of marginals up to which are preserved)
-
-- sometimes to get it to converge it is necessary to play with the initial
-  condition for the numerical optimisation using argument eg:
-    ic_offset=-0.00001
-
-
-The code expects a data/ directory where it will store the generated 
-transformation matrix for a given parameter set. If it finds one there it will 
-load it rather than generating it again, meaning this lengthy step should only 
-need to be performed once.
-
-This is a basic version of the code. If you are interested in 
-collaborating or would like to check the developments in the most recent lab 
-version please contact:
-Robin Ince <pyentropy@robince.net>
+This allows efficient vectorised conversion between probability index and 
+response word using base2dec, dec2base. The output is in the same format.
 
 """
-
 import time
 import os
 import sys
@@ -135,17 +118,17 @@ def get_data_dir():
 # AmariSolve class
 #
 class AmariSolve:
-    """A class for computing maximum-entropy solutions
-   
-    Methods
-    -------
-    __init__(n,m) :
-        constructor generates/loads transformation matrix
-    solve(Pr,k) : 
-        maxent solution of a distribution
-    theta_from_p(P), eta_from_p(P), p_from_theta(theta) :
-        Amari coordinate transformations
+    """A class for computing maximum-entropy solutions.
 
+    When the class is initiliased the coordinate transform matrices are loaded
+    from disk, if available, or generated.
+
+    See module docstring for location of cache directory.
+    
+    An instance then exposes a solve method which returns the maximum entropy
+    distribution preserving marginal constraints of the input probability 
+    vector up to a given order k. 
+   
     """
 
     def __init__(self, n, m, filename='a_', local=False, confirm=True):
@@ -154,17 +137,21 @@ class AmariSolve:
         If existing matrix file is found, load the (sparse) transformation
         matrix A, otherwise generate it.
 
-        Inputs:
-        n - number of variables in the system
-        m - size of finite alphabet (number of symbols)
-        filename='a_' - filename to load/save
-                            (designed to be used by derived classes)
-                            if None, no file is accessed (force generation)
-        local - if True, then store/load arrays from 'data/' directory in 
-                current working directory. Otherwise use the package data dir
-                (default ~/.pyentropy or ~/_pyentropy (windows))
-                Can be overridden through ~/.pyentropy.cfg or ~/pyentropy.cfg 
-                (windows)
+        :Parameters:
+          n : int
+            number of variables in the system
+          m : int
+            size of finite alphabet (number of symbols)
+          filename : {str, None}, optional
+            filename to load/save (designed to be used by derived classes).
+          local : {False, True}, optional 
+            If True, then store/load arrays from 'data/' directory in 
+            current working directory. Otherwise use the package data dir
+            (default ~/.pyentropy or ~/_pyentropy (windows))
+            Can be overridden through ~/.pyentropy.cfg or ~/pyentropy.cfg 
+            (windows)
+          confirm : {True, False}, optional
+            Whether to prompt for confirmation before generating matrix
 
         """
 
@@ -192,9 +179,7 @@ class AmariSolve:
 
         # if file exists load (matrix A)
         # must be running in correct directory
-        if filename == None:
-            self._generate_matrix()
-        elif os.path.exists(self.filename+'.mat'):
+        if os.path.exists(self.filename+'.mat'):
             loaddict = sio.loadmat(self.filename+'.mat')
             self.A = loaddict['A'].tocsc()
             self.order_idx = loaddict['order_idx'].squeeze()
@@ -317,13 +302,26 @@ class AmariSolve:
                     self._recloop(order, depth+1, alpha_new, pos_new, n, m, blocksize=blocksize)
 
     def solve(self,Pr,k,eta_given=False,ic_offset=-0.01, **kwargs):
-        """Find Amari maxent distribution for a given order k
+        """Find maxent distribution for a given order k
         
-        Inputs:
-        Pr - probability distribution vector
-        k - Amari order of interest
+        :Parameters:
+          Pr : (fdim,)
+           probability distribution vector
+          k : int
+            Order of interest (marginals up to this order constrained)
+          eta_given : {False, True}, optional
+            Set this True if you are passing the marginals in Pr instead of 
+            the probabilities
+          ic_offset : float, oprtional
+            Initial condition offset for the numerical optimisation. If you
+            are having trouble getting convergence, try playing with this. 
+            Usually making it smaller is effective (ie -0.00001)
 
-        Returns theta vector of Amari solution.
+        :Returns:
+          Psolve : (fdim,)
+            probability distribution vector of k-th order maximum entropy
+            solution
+
 
         """
         if len(Pr.shape) != 1:
@@ -404,13 +402,14 @@ class AmariSolve:
         return pnorm(np.exp(self.A.T.matvec(theta)))
 
     def p_from_theta(self, theta):
-        """Return full fdim p-vector from dim lenght theta"""
+        """Return full ``fdim`` p-vector from ``fdim-1`` length theta"""
         p = np.zeros(self.fdim)
         p[1:] = self._p_from_theta(theta)
         p[0] = 1.0 - p.sum()
         return p
 
     def theta_from_p(self, p):
+        """Return theta vector from full probaility vector"""
         b = np.log(p[1:]) - np.log(p[0])
         if HAS_UMFPACK:
             # use prefactored matrix
@@ -421,6 +420,7 @@ class AmariSolve:
         return theta
 
     def eta_from_p(self, p):
+        """Return eta-vector (marginals) from full probability vector"""
         return self.A.matvec(p[1:])
 
 

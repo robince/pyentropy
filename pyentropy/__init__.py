@@ -15,22 +15,14 @@
 #
 #    Copyright 2009, 2010 Robin Ince
 """
-Entropy and Information Estimates
-=================================
+A package for calculating bias-corrected estimates of entropy and mutual 
+information quantities over discrete spaces.
 
- This module provides techniques for estimates of information theoretic 
- quantities.
-
-Classes
--------
-
-  DiscreteSystem :
-      Class to sample and hold probabilities of a general discrete system.
-  SortedDiscreteSystem:
-      Class to sample and hold probabilites for a system where the input
-      output mapping is available already sorted by output.
+For more information see the project home page: 
+http://code.google.com/p/pyentropy
 
 """
+
 __author__ = 'Robin Ince'
 __version__ = '0.4.0dev'
 
