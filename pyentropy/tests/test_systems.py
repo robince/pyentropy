@@ -40,7 +40,7 @@ def setup_1d():
     # simple channel which corrupts 50% randomly
     x = np.random.random_integers(0,9,100000)
     y = x.copy()
-    indx = np.random.permutation(len(x)/2)
+    indx = np.random.permutation(len(x))[:len(x)/2]
     y[indx] = np.random.random_integers(0,9,len(x)/2)
     # analytic results
     HX = np.log2(10)
