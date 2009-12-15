@@ -20,7 +20,7 @@ and is initiliased in the following way::
 X, which usually represents response for neural data, should be of dimensions
 ``(Xn, T)`` where Xn is the number of variables (cells) and T is the number of
 trials. X takes integer values ``0 < X < Xm``. ``X_dims`` is a tuple ``(Xn,
-Xm)``. 
+Xm)`` (note this is not the dimensions of the data vector with trials, but the parameters of the discrete probability space). 
 
 Y, which usually represents stimulus for neural data, should be of dimensions
 ``(Yn, T)`` where Yn is the number of stimulus variables (usually 1) and T is
