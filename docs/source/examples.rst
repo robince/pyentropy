@@ -103,9 +103,11 @@ This example simulates a noisy communication channel which randomly corrupts
 
 A more involved example script, which produces the data and plots for Figure 1 
 of    
+
    | Ince, R. A. A., Petersen, R. S., Swan, D. C. and Panzeri, S. (2009)
    | "Python for Information Theoretic Analysis of Neural Data"
    | Frontiers in Neuroinformatics **3**:4 
+
 can be found `here <http://code.google.com/p/pyentropy/wiki/SupplementalData>`_. 
 For more information on the entropy values and bias corrections which can be
 selected see :ref:`primer`.

@@ -42,8 +42,6 @@ Utility Functions
 
 .. autofunction:: pyentropy.prob
 
-.. autofunction:: pyentropy.pt_bayescount
-
 .. autofunction:: pyentropy.quantise
 
 
@@ -59,3 +57,5 @@ Utility Functions
 .. autofunction:: pyentropy.maxent.get_config_file
 
 .. autofunction:: pyentropy.maxent.get_data_dir
+
+
