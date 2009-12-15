@@ -6,7 +6,7 @@ Installation and Requirements
 
 
 pyEntropy requires a recent version of `Python <http://www.python.org>`_ and
-`NumPy <http://www.scipy.org/>`_. Any Python >2.5 and NumPy > 1.2 should be
+`NumPy <http://www.scipy.org/>`_. Any Python >2.5 and NumPy > 1.3 should be
 fine, but the most recent releases are recommend. If you have any problems
 please email (or open an issue).
 
