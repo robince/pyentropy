@@ -18,7 +18,7 @@
 from __future__ import division
 import numpy as np
 from utils import (prob, _probcount, decimalise, pt_bayescount, 
-                   nsb_entropy, dec2base, ent)
+                   nsb_entropy, dec2base, ent, malog2)
 
 class BaseSystem:
     """Base functionality for entropy calculations common to all systems"""
@@ -113,8 +113,8 @@ class BaseSystem:
                 # no PT correction for HiX
                 self.H_pt['HiX'] = H
         if 'ChiX' in calc:
-            H = -np.ma.array(self.PX*np.log2(self.PiX),copy=False,
-                    mask=(self.PiX<=np.finfo(np.float).eps)).sum(axis=0)
+            H = -(self.PX*malog2(np.ma.array(self.PiX,copy=False,
+                    mask=(self.PiX<=np.finfo(np.float).eps)))).sum(axis=0)
             self.H_plugin['ChiX'] = H
             if pt:
                 # no PT correction for ChiX

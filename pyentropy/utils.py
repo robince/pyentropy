@@ -283,9 +283,9 @@ def decimalise(x, n, b):
         Array of decimalised values
 
     """
-    if x.shape[0] != n or x.max() > m-1:
+    if x.shape[0] != n or x.max() > b-1:
         raise ValueError, "Input vector x doesnt match parameters"
-    powers = m**np.arange(n-1,-0.5,-1,dtype=int)
+    powers = b**np.arange(n-1,-0.5,-1)
     d_x = np.dot(x.T,powers).astype(int)
     return d_x
 
