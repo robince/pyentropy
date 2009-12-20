@@ -51,19 +51,19 @@ cdef extern from "toolkit_c.h":
     int entropy_nsb(hist1d *inhist, 
                     options_entropy *opts, estimate *entropy)
 
-def nsb(int Nt, int m, np.ndarray[np.int_t, ndim=1] C,
-        verbose=True, var=False):
+def nsb_entropy(np.ndarray[np.float_t, ndim=1] P, int N, int dim, 
+        verbose=False, var=False):
     """Calculate entropy using C NSB implementation from `Spike Train Analysis
     Toolkit <http://neuroanalysis.org/toolkit/index.html>`_.
 
     :Parameters:
-      Nt : int
+      P : (dim,) float array
+        Probability vector
+      N : int
         Number of trials.
-      m : int
+      dim : int
         Dimension of space
-      C : (m,) int array
-        Vector of counts.
-      verbose : {True, False}, optional
+      verbose : {False, True}, optional
         Print warnings from NSB routine.
       var : {False, True}, optional
         Return variance in addition to entropy
@@ -75,17 +75,19 @@ def nsb(int Nt, int m, np.ndarray[np.int_t, ndim=1] C,
         Variance (if requested)
 
     """
-    if C.size != m:
-        raise ValueError, "Counts vector must be of length m"
-    if C.sum() != Nt:
-        raise ValueError, "sum(C) must equal Nt"
+    if P.size != dim:
+        raise ValueError, "P vector must be of length dime"
+    if np.abs(P.sum()-1.0) > np.finfo(np.float).eps:
+        raise ValueError, "sum(P) must equal 1"
+
+    # convert to counts
+    cdef np.ndarray[np.float_t, ndim=1] C 
+    C = np.zeros(dim, dtype=np.float)
+    np.around(P*N, out=C)
 
     # word list
     cdef np.ndarray[np.int_t, ndim=2] wl 
-    wl = np.atleast_2d(np.arange(m, dtype=np.int))
-    # word count (cast to double)
-    cdef np.ndarray[np.float_t, ndim=1] wc
-    wc = C.astype(float)
+    wl = np.atleast_2d(np.arange(dim, dtype=np.int))
 
     # create options structure
     cdef options_entropy opts
@@ -111,10 +113,10 @@ def nsb(int Nt, int m, np.ndarray[np.int_t, ndim=1] C,
 
     # create hist1d structure
     cdef hist1d input
-    input.P = Nt
-    input.C = m
+    input.P = N
+    input.C = dim
     input.wordlist = <int **>(wl.data)
-    input.wordcnt = <double *>(wc.data)
+    input.wordcnt = <double *>(C.data)
 
     entropy_nsb(&input, &opts, entropy)
 
@@ -142,11 +144,16 @@ def nsb(int Nt, int m, np.ndarray[np.int_t, ndim=1] C,
         for k in range(mess.k):
             print mess.errors[k]
 
+    cdef double H
+    cdef double V
+    H = entropy[0].value
+    V = entropy[0].ve[0].value
+
     # free everything
     CFreeEst(entropy, &opts)
 
     if var:
-        return entropy[0].value, entropy[0].ve[0].value
+        return H, V
     else:
-        return entropy[0].value
+        return H
     
