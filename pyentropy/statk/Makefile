@@ -30,7 +30,7 @@ hist_c.o:
 	${CC} ${ARCH} -c hist_c.c
 
 clean:
-	rm -rf *.o wrap.c wrap.so
+	rm -rf *.o wrap.so
 
 cleanpyx:
 	rm wrap.c wrap.o wrap.so
