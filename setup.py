@@ -1,9 +1,14 @@
+import sys, os
+import pyentropy
+
+# BEFORE importing disutils, remove MANIFEST. distutils doesn't properly
+# update it when the contents of directories change.
+if os.path.exists('MANIFEST'): os.remove('MANIFEST')
+
 from distutils.core import setup
 from distutils.extension import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import CCompilerError, DistutilsExecError
-import sys, os
-import pyentropy
 
 extension_build_failed = False
 
