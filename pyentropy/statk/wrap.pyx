@@ -120,7 +120,6 @@ def nsb_entropy(np.ndarray[np.float_t, ndim=1] P, int N, int dim,
 
     entropy_nsb(&input, &opts, entropy)
 
-    print "Entropy: ", entropy[0].value
     cdef message mess
     mess = entropy[0].messages[0]
 

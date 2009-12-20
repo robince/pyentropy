@@ -166,7 +166,7 @@ def pt_bayescount(Pr, Nt):
     return Rnaive
 
 
-def nsb_entropy(P, N, dim):
+def nsb_entropy(P, N, dim, var=False):
     """Calculate NSB entropy of a probability distribution using
     external nsb-entropy program.
 
@@ -179,6 +179,8 @@ def nsb_entropy(P, N, dim):
         Total number of trials
       dim : int 
         Full dimension of space
+      var : {False, True}, optional
+        Return variance in addition to entropy
     
     """
     
@@ -213,7 +215,10 @@ def nsb_entropy(P, N, dim):
     H = float(results[15].split(' ')[0])
     dH = float(results[20].split(' ')[0])
 
-    return [H, dH]
+    if var:
+        return [H/np.log(2), dH/np.log(2)]
+    else:
+        return H/np.log(2)
 
 
 def dec2base(x, b, digits):

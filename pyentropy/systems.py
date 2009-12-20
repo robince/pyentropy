@@ -19,7 +19,6 @@ from __future__ import division
 import numpy as np
 from utils import (prob, _probcount, decimalise, pt_bayescount, 
                    dec2base, ent, malog2)
-import stat.nsb
 
 class BaseSystem:
     """Base functionality for entropy calculations common to all systems"""
@@ -64,7 +63,7 @@ class BaseSystem:
             if nsb: 
                 self.H_nsb['HshX'] = sh.H_nsb['HX']
             if nsbext: 
-                self.H_nsbext['HshXY'] = sh.H_nsbext['HXY']
+                self.H_nsbext['HshX'] = sh.H_nsbext['HX']
             if plugin or pt: 
                 self.H_plugin['HshX'] = sh.H_plugin['HX']
             
@@ -161,37 +160,46 @@ class BaseSystem:
             from utils import nsb_entropy
         else:
             # don't catch exceptions - just fail if can't import
-            from stat.wrap import nsb_entropy
+            from statk.wrap import nsb_entropy as _nsb_entropy
+            nsb_entropy = lambda x,y,z: _nsb_entropy(x,y,z,verbose=True)
         calc = self.calc
         # TODO: 1 external program call if all y have same number of trials
-        self.H_nsb = {}
+        H_nsb = {}
         if 'HX' in calc:
-            H = nsb_entropy(self.PX, self.N, self.X_dim)[0] / np.log(2)
-            self.H_nsb['HX'] = H
+            H = nsb_entropy(self.PX, self.N, self.X_dim) 
+            H_nsb['HX'] = H
         if 'HY' in calc:
-            H = nsb_entropy(self.PY, self.N, self.Y_dim)[0] / np.log(2)
-            self.H_nsb['HY'] = H
+            H = nsb_entropy(self.PY, self.N, self.Y_dim)
+            H_nsb['HY'] = H
         if 'HXY' in calc:
             H = 0.0
             for y in xrange(self.Y_dim):
-                H += self.PY[y] * nsb_entropy(self.PXY[:,y], self.Ny[y], self.X_dim)[0] \
-                        / np.log(2)
-            self.H_nsb['HXY'] = H
+                H += self.PY[y] * nsb_entropy(self.PXY[:,y], self.Ny[y], self.X_dim) 
+            H_nsb['HXY'] = H
         if 'SiHXi' in calc:
             # TODO: can easily use 1 call here
             H = 0.0
             for i in xrange(self.X_n):
-                H += nsb_entropy(self.PXi[:,i], self.N, self.X_m)[0] / np.log(2)
-            self.H_nsb['SiHXi'] = H
+                H += nsb_entropy(self.PXi[:,i], self.N, self.X_m) 
+            H_nsb['SiHXi'] = H
         if 'HiXY' in calc:
             H = 0.0
             for i in xrange(self.X_n):
                 for y in xrange(self.Y_dim):
-                    H += self.PY[y] * nsb_entropy(self.PXiY[:,i,y], self.Ny[y], self.X_m)[0] / np.log(2)
-            self.H_nsb['HiXY'] = H
+                    H += self.PY[y] * nsb_entropy(self.PXiY[:,i,y], self.Ny[y], self.X_m) 
+            H_nsb['HiXY'] = H
         if 'HiX' in calc:
-            H = nsb_entropy(self.PiX, self.N, self.X_dim)[0] / np.log(2)
-            self.H_nsb['HiX'] = H
+            H = nsb_entropy(self.PiX, self.N, self.X_dim)
+            H_nsb['HiX'] = H
+        if 'ChiX' in calc:
+            print "Warning: No NSB correction applied for ChiX"
+            H = -(self.PX*malog2(np.ma.array(self.PiX,copy=False,
+                    mask=(self.PiX<=np.finfo(np.float).eps)))).sum(axis=0)
+            H_nsb['ChiX'] = H
+        if ext:
+            self.H_nsbext = H_nsb
+        else:
+            self.H_nsb = H_nsb
 
     def calculate_entropies(self, method='plugin', sampling='naive', 
                             calc=['HX','HXY'], **kwargs):

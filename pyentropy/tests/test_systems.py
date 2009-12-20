@@ -15,6 +15,7 @@
 #
 #    Copyright 2009, 2010 Robin Ince
 
+from copy import copy
 import numpy as np
 from numpy.testing import *
 from nose.tools import with_setup
@@ -60,11 +61,9 @@ def do_1d_check(method, qe_method):
     # calculate all entropies
     s.calculate_entropies(method=method, calc=allcalc, qe_method=qe_method)
     # check output assinged
-    assert_(s.H == getattr(s,'H_%s'%method))
-    v = []
-    for k in allcalc:
-        v.append(s.H[k])
-    assert_array_almost_equal(np.array(v), alltrue, decimal=2)
+    assert_(s.H == getattr(s,'H_%s'%method.replace('-','')))
+    v = np.array([s.H[k] for k in allcalc])
+    assert_array_almost_equal(v, alltrue, decimal=2)
     # check didn't do something nasty to inputs
     assert_array_equal(x, xc)
     assert_array_equal(y, yc)
@@ -75,11 +74,16 @@ def test_1d_plugin():
 def test_1d_pt():
     yield do_1d_check, 'pt', None
 
+def test_1d_nsb():
+    yield do_1d_check, 'nsb', None
+
 def test_1d_qe():
     yield do_1d_check, 'qe', 'plugin'
 
 def test_1d_qe_pt():
     yield do_1d_check, 'plugin', 'pt'
+
+
 
 #
 # test SortedDiscreteSystem with simple 1D input, output
@@ -111,7 +115,7 @@ def do_1d_check_sorted(method, qe_method):
     # calculate all entropies
     s.calculate_entropies(method=method, calc=allcalc, qe_method=qe_method)
     # check output assinged
-    assert_(s.H == getattr(s,'H_%s'%method))
+    assert_(s.H == getattr(s,'H_%s'%method.replace('-','')))
     v = np.array([s.H[k] for k in allcalc])
     assert_array_almost_equal(v, alltrue, decimal=2)
     # check didn't do something nasty to inputs
@@ -123,6 +127,9 @@ def test_1d_plugin_sorted():
     
 def test_1d_pt_sorted():
     yield do_1d_check, 'pt', None
+
+def test_1d_nsb_sorted():
+    yield do_1d_check, 'nsb', None
 
 def test_1d_qe_sorted():
     yield do_1d_check, 'qe', 'plugin'
