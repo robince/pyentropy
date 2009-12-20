@@ -161,9 +161,9 @@ class BaseSystem:
         else:
             # don't catch exceptions - just fail if can't import
             from statk.wrap import nsb_entropy as _nsb_entropy
-            nsb_entropy = lambda x,y,z: _nsb_entropy(x,y,z,verbose=True)
+            # for debugging
+            #nsb_entropy = lambda x,y,z: _nsb_entropy(x,y,z,verbose=True)
         calc = self.calc
-        # TODO: 1 external program call if all y have same number of trials
         H_nsb = {}
         if 'HX' in calc:
             H = nsb_entropy(self.PX, self.N, self.X_dim) 
@@ -177,7 +177,6 @@ class BaseSystem:
                 H += self.PY[y] * nsb_entropy(self.PXY[:,y], self.Ny[y], self.X_dim) 
             H_nsb['HXY'] = H
         if 'SiHXi' in calc:
-            # TODO: can easily use 1 call here
             H = 0.0
             for i in xrange(self.X_n):
                 H += nsb_entropy(self.PXi[:,i], self.N, self.X_m) 
