@@ -163,6 +163,7 @@ class BaseSystem:
             from statk.wrap import nsb_entropy as _nsb_entropy
             # for debugging
             #nsb_entropy = lambda x,y,z: _nsb_entropy(x,y,z,verbose=True)
+            nsb_entropy = _nsb_entropy
         calc = self.calc
         H_nsb = {}
         if 'HX' in calc:
