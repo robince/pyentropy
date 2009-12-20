@@ -8,7 +8,33 @@ Installation and Requirements
 pyEntropy requires a recent version of `Python <http://www.python.org>`_ and
 `NumPy <http://www.scipy.org/>`_. Any Python >2.5 and NumPy > 1.3 should be
 fine, but the most recent releases are recommend. If you have any problems
-please email (or open an issue).
+please email (or open an issue). From version 0.5.0, a C++ NSB implementation
+(from the `Spike Train Analysis Toolkit
+<http://neuroanalysis.org/toolkit/index.html>`_) is included which requires a
+compiler, and also the `Gnu Scientific Library (GSL)
+<http://www.gnu.org/software/gsl/>`_. On Linux, you should be able to install
+these through your package manager. E.g. for Ubuntu::
+
+    sudo aptitude install build-essential python-dev libgsl0-dev
+
+should provide all the requirements. On a Mac, XCode and (with MacPorts
+installed)::
+
+    sudo port install gsl
+
+should be enough. On Posix platforms (Mac/Linux) you should have the
+``gsl-config`` program in your path. For Windows, I am currently investigating
+the best way, and will hopefully provide binaries.
+
+.. note:: 
+
+    The :mod:`pyentropy.statk.wrap` module is optional. I intend to keep
+    pyEntropy installable and usable as a pure Python package with minimal
+    dependencies. If the build fails for any reason, warnings will be
+    displayed, but the pyEntropy package should still be installable. The
+    ``nsb`` entropy method will be unavailable but if you have the
+    ``nsb-entropy`` program from http://nsb-entropy.sourceforge.net/ on your
+    path you should still be able to use the ``nsb-ext`` method.
 
 The :mod:`pyentropy.maxent` module also requires 
 `SciPy <http://www.scipy.org>`_.
@@ -31,7 +57,10 @@ UNIX systems (without root access).
 
 .. note::
     You can test your installation by running ``pyentropy.test()``. This runs
-    a series of unit tests found in the tests directory.
+    a series of unit tests found in the tests directory. Since the tests of the
+    NSB method can take a long time (around 2 minutes on a fast computer) they
+    are not run by default, but can be included by running
+    ``pyentropy.test('full')``. 
 
 :mod:`pyentropy.maxent` stores generated transformation matrices for a given
 set of parameters are to disk. These files can get large so you should be aware

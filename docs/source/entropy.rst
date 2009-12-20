@@ -41,7 +41,13 @@ with `method` argument to
 ``qe``
     Quadratic extrapolation [Strong98]_. See above.
 ``nsb``
-    Nemenman-Shafee-Bialek method [NSB02]_.
+    Nemenman-Shafee-Bialek method [NSB02]_. This uses a C++ version of the
+    algorithm from the `Spike Train Analysis Toolkit 
+    <http://neuroanalysis.org/toolkit/index.html>`_. 
+``nsb-ext``
+    Nemenman-Shafee-Bialek method [NSB02]_. This uses the external
+    ``nsb-entropy`` package from http://nsb-entropy.sourceforge.net/ . This
+    should be installed on your path.
 
 Which method should I use?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
