@@ -297,12 +297,12 @@ class BaseSystem:
         """
         try:
             if corr is not None:
-                H = getattr(self,'H_%s'%corr)
+                H = getattr(self,'H_%s'%corr.replace('-',''))
             else:
                 H = self.H
             I = H['HX'] - H['HXY']
         except (KeyError, AttributeError):
-            print "Error: must have computed HX and HXY for" + \
+            print "Error: must have computed HX and HXY for " + \
             "mutual information"
             return
         return I
@@ -322,12 +322,12 @@ class BaseSystem:
         """
         try:
             if corr is not None:
-                H = getattr(self,'H_%s'%corr)
+                H = getattr(self,'H_%s'%corr.replace('-',''))
             else:
                 H = self.H
             I = H['HX'] - H['HiXY'] + H['HshXY'] - H['HXY']
         except (KeyError, AttributeError):
-            print "Error: must have computed HX, HiXY, HshXY and HXY" + \
+            print "Error: must have computed HX, HiXY, HshXY and HXY " + \
                     "for shuffled mutual information estimator"
             return
         return I
@@ -347,7 +347,7 @@ class BaseSystem:
         """
         try:
             if corr is not None:
-                H = getattr(self,'H_%s'%corr)
+                H = getattr(self,'H_%s'%corr.replace('-',''))
             else:
                 H = self.H
             I = (H['HX'] - H['HshX'] + H['SiHXi'] -
