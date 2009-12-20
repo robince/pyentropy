@@ -20,6 +20,7 @@ import numpy as np
 from numpy.testing import *
 from nose.tools import with_setup
 from pyentropy import DiscreteSystem, SortedDiscreteSystem
+import subprocess, os
 
 # TODO: test ChiXY1 HXY1 for binary data (Adelman Ispike)
 # TODO: test running more than once on an instance (to catch eg shuffling bug)
@@ -33,6 +34,22 @@ def setup():
     allcalc = ['HX','HY','HXY','SiHXi','HiX','HshX','HiXY',
                'HshXY','ChiX']
 
+def nsb_available():
+    try:
+        import pyentropy.statk.wrap
+    except ImportError:
+        return False
+    else:
+        return True
+
+def nsb_ext_available():
+    try:
+        subprocess.call(["nsb-entropy"],stdout=open(os.devnull))
+    except OSError:
+        return False
+    else:
+        return True
+        
 #
 # test DiscreteSystem with simple 1D input, output
 #
@@ -74,8 +91,15 @@ def test_1d_plugin():
 def test_1d_pt():
     yield do_1d_check, 'pt', None
 
+@dec.skipif(not nsb_available, "STATK NSB wrapper not available")
+@dec.slow
 def test_1d_nsb():
     yield do_1d_check, 'nsb', None
+
+@dec.skipif(not nsb_ext_available, "nsb-entropy binary not found on path")
+@dec.slow
+def test_1d_nsbext():
+    yield do_1d_check, 'nsb-ext', None
 
 def test_1d_qe():
     yield do_1d_check, 'qe', 'plugin'
@@ -123,19 +147,26 @@ def do_1d_check_sorted(method, qe_method):
     assert_array_equal(y, yc)
 
 def test_1d_plugin_sorted():
-    yield do_1d_check, 'plugin', None
+    yield do_1d_check_sorted, 'plugin', None
     
 def test_1d_pt_sorted():
-    yield do_1d_check, 'pt', None
+    yield do_1d_check_sorted, 'pt', None
 
+@dec.skipif(not nsb_available(), "STATK NSB wrapper not available")
+@dec.slow
 def test_1d_nsb_sorted():
-    yield do_1d_check, 'nsb', None
+    yield do_1d_check_sorted, 'nsb', None
+
+@dec.skipif(not nsb_ext_available(), "nsb-entropy binary not found on path")
+@dec.slow
+def test_1d_nsbext_sorted():
+    yield do_1d_check_sorted, 'nsb-ext', None
 
 def test_1d_qe_sorted():
-    yield do_1d_check, 'qe', 'plugin'
+    yield do_1d_check_sorted, 'qe', 'plugin'
 
 def test_1d_qe_pt_sorted():
-    yield do_1d_check, 'plugin', 'pt'
+    yield do_1d_check_sorted, 'plugin', 'pt'
 
 #
 # toy system to check decomposition, PiX construction etc.
