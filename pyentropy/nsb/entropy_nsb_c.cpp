@@ -7,6 +7,18 @@
  *  at http://neurodatabase.org/src/license.
  */
 
+/*
+ * We hereby acknowledge the prior work on which this current work was based,
+ * as describled in Nemenman, I., Shafee, F., Bialek, W. (2002) Entropy and
+ * inference, revisited. In Dietterich, T.G., Becker, S., and Ghahramani, Z.
+ * eds. Advances in Neural Information Processing Systems 14, Cambridge, MA,
+ * 2002. MIT Press. arXiv: physics/010802, as well as the prior source code
+ * from which this code was distilled, as provided at
+ * http://nsb-entropy.sourceforge.net/, and copyrighted 2002-2004 by Ilya
+ * Nemenman under the GNU General Public License version 2 or greater
+ * (http://www.gnu.org/licenses/gpl.html).
+ */
+
 /** @file
  * @brief Computational routines for calculating NSB entropy.
  * This file contains the computational routines for calculating the entropy of

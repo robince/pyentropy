@@ -24,7 +24,7 @@ extern "C" {
 #include <limits.h>
 //#include "../input/input_c.h"
 #include "entropy_c.h"
-//#include "hist_c.h"
+#include "hist_c.h"
 #include "gen_c.h"
 #include "sort_c.h"
 
