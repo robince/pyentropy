@@ -18,7 +18,8 @@
 from __future__ import division
 import numpy as np
 from utils import (prob, _probcount, decimalise, pt_bayescount, 
-                   nsb_entropy, dec2base, ent, malog2)
+                   dec2base, ent, malog2)
+import stat.nsb
 
 class BaseSystem:
     """Base functionality for entropy calculations common to all systems"""
@@ -30,12 +31,15 @@ class BaseSystem:
         pt = (method == 'pt') or ('pt' in methods)
         plugin = (method == 'plugin') or ('plugin' in methods)
         nsb = (method == 'nsb') or ('nsb' in methods)
+        nsbext = (method == 'nsb-ext') or ('nsb-ext' in methods)
         calc = self.calc
 
         if (pt or plugin): 
             self._calc_pt_plugin(pt)
         if nsb:
-            self._calc_nsb()
+            self._calc_nsb(ext=False)
+        if nsbext:
+            self._calc_nsb(ext=True)
         if 'HshXY' in calc:
             #TODO: not so efficient since samples PY again
             sh = self._sh_instance()
@@ -46,6 +50,8 @@ class BaseSystem:
                 self.H_pt['HshXY'] = sh.H_pt['HXY']
             if nsb: 
                 self.H_nsb['HshXY'] = sh.H_nsb['HXY']
+            if nsbext: 
+                self.H_nsbext['HshXY'] = sh.H_nsbext['HXY']
             if plugin or pt: 
                 self.H_plugin['HshXY'] = sh.H_plugin['HXY']
         if 'HshX' in calc:
@@ -57,6 +63,8 @@ class BaseSystem:
                 self.H_pt['HshX'] = sh.H_pt['HX']
             if nsb: 
                 self.H_nsb['HshX'] = sh.H_nsb['HX']
+            if nsbext: 
+                self.H_nsbext['HshXY'] = sh.H_nsbext['HXY']
             if plugin or pt: 
                 self.H_plugin['HshX'] = sh.H_plugin['HX']
             
@@ -66,6 +74,8 @@ class BaseSystem:
             self.H = self.H_pt
         elif method == 'nsb':
             self.H = self.H_nsb
+        elif method == 'nsb-ext':
+            self.H = self.H_nsbext
 
     def _calc_pt_plugin(self, pt):
         """Calculate direct entropies and apply PT correction if required """
@@ -139,8 +149,19 @@ class BaseSystem:
                 # no PT for ChiXY1
                 self.H_pt['ChiXY1'] = H
     
-    def _calc_nsb(self):
-        """Calculate NSB corrected entropy"""
+    def _calc_nsb(self, ext=False):
+        """Calculate NSB corrected entropy
+        
+        :Parameters:
+          ext : {False, True}, optional
+            Use external 'nsb-entropy' program vs STAT version
+
+        """
+        if ext:
+            from utils import nsb_entropy
+        else:
+            # don't catch exceptions - just fail if can't import
+            from stat.wrap import nsb_entropy
         calc = self.calc
         # TODO: 1 external program call if all y have same number of trials
         self.H_nsb = {}
@@ -177,7 +198,7 @@ class BaseSystem:
         """Calculate entropies of the system.
 
         :Parameters:
-          method : {'plugin', 'pt', 'qe', 'nsb'}
+          method : {'plugin', 'pt', 'qe', 'nsb', 'nsb-ext'}
             Bias correction method to use
           sampling : {'naive', 'kt', 'beta:x'}, optional
             Sampling method to use. 'naive' is the standard histrogram method.
@@ -191,7 +212,7 @@ class BaseSystem:
             'SiHXi', 'HiX', 'HshX', 'HiXY', 'HshXY', 'ChiX', 'HXY1','ChiXY1')
 
         :Keywords:
-          qe_method : {'plugin', 'pt', 'nsb'}, optional
+          qe_method : {'plugin', 'pt', 'nsb', 'nsb-ext'}, optional
             Method argument to be passed for QE calculation ('pt', 'nsb'). 
             Allows combination of QE with other corrections.
           methods : list of strs, optional
@@ -223,7 +244,7 @@ class BaseSystem:
         self.calc = calc
         self.methods = kwargs.get('methods',[])
         for m in (self.methods + [method]):
-            if m not in ('plugin','pt','qe','nsb'):
+            if m not in ('plugin','pt','qe','nsb','nsb-ext'):
                 raise ValueError, 'Unknown correction method : '+str(m)
         methods = self.methods
 
