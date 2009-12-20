@@ -91,12 +91,12 @@ def test_1d_plugin():
 def test_1d_pt():
     yield do_1d_check, 'pt', None
 
-@dec.skipif(not nsb_available, "STATK NSB wrapper not available")
+@dec.skipif(not nsb_available(), "STATK NSB wrapper not available")
 @dec.slow
 def test_1d_nsb():
     yield do_1d_check, 'nsb', None
 
-@dec.skipif(not nsb_ext_available, "nsb-entropy binary not found on path")
+@dec.skipif(not nsb_ext_available(), "nsb-entropy binary not found on path")
 @dec.slow
 def test_1d_nsbext():
     yield do_1d_check, 'nsb-ext', None
