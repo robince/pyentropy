@@ -341,4 +341,58 @@ def quantise(input, m, uniform='sampling', minmax=None,
     else:
         return q_value, bin_bounds
 
+def quantise_discrete(input, m):
+    """Re-bin an already discretised sequence (eg of integer counts)
+
+    Input should already be non-negative integers
+
+    """
+    # astype forces a copy even if already int
+    X = input.astype(np.int)
+    if (X.min() < 0) or not np.all(np.asarray(X,dtype=np.int)==X):
+        raise ValueError, "Expecting non-negative integer input"
+
+    if input.max() < m:
+        # nothing to do
+        return input
+
+    # rebinning algorithm
+    # get bincounts now to determine smallest bins
+    # merge smallest bin to smallest neighbouring bin
+    # (maintain continuity) until we have the right number
+    counts = list(np.bincount(X))
+    Nbins = len(counts)
+    labels = list(np.r_[0:Nbins])
+
+    def merge_bins(a,b):
+        """Merge bin a into bin b"""
+        counts[b] = counts[b] + counts[a]
+        X[X==labels[a]] = labels[b]
+        counts.pop(a)
+        labels.pop(a)
+
+    while Nbins > m:
+        cidx = np.argsort(counts)
+        # smallest one
+        si = cidx[0]
+        # if its at the edges can only merge one way
+        if si == 0:
+            merge_bins(si,1)
+        elif si == len(counts)-1:
+            merge_bins(si, si-1)
+        else:
+            # merge to the smallest neighbour
+            target = [si-1, si+1][np.argmin([counts[si-1], counts[si+1]])]
+            merge_bins(si, target)
+        Nbins = Nbins - 1
+
+    # relabel
+    newlabels = range(len(labels))
+    for i in range(len(labels)):
+        if newlabels[i] != labels[i]:
+            # only reassign if necessary
+            X[X==labels[i]] = newlabels[i]
+
+    return X
+
 
