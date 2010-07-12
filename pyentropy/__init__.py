@@ -28,7 +28,7 @@ __version__ = '0.4.1dev'
 
 from systems import DiscreteSystem, SortedDiscreteSystem
 from utils import (prob, decimalise, nsb_entropy, quantise,
-                             dec2base, base2dec)
+                             dec2base, base2dec, quantise_discrete)
 
 from numpy.testing import Tester
 test = Tester().test
