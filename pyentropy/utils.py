@@ -334,7 +334,7 @@ def quantise(input, m, uniform='sampling', minmax=None,
         bin_bounds *= bin_width
         bin_bounds += min
         if centers:
-            bin_centers = r_[bin_bounds - (bin_width/2.0), bin_bounds[-1]+(bin_width/2.0)]
+            bin_centers = np.r_[bin_bounds - (bin_width/2.0), bin_bounds[-1]+(bin_width/2.0)]
     else:
         raise ValueError, "Unknown value of 'uniform'"
 
