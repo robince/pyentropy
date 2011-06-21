@@ -309,9 +309,18 @@ def quantise(input, m, uniform='sampling', minmax=None,
     if uniform == 'sampling':
         #bin_numel = np.round(input.size/m) - 1
         bin_numel = np.floor(input.size/m)
+        # -1 to go to index
+        r = input.size - (bin_numel*m) 
+
         stemp = input.copy()
         stemp.sort(axis=0)
-        bin_bounds = stemp[bin_numel:-bin_numel+1:bin_numel]
+        # original method
+        #bin_bounds = stemp[bin_numel:-bin_numel+1:bin_numel]
+        # more uniform method
+        idx = np.arange(bin_numel, bin_numel*m, bin_numel, dtype=np.int)
+        idx[0:r] = idx[0:r] + np.arange(0,r,dtype=np.int)
+        bin_bounds = stemp[idx]
+
         if centers:
             # calculate center for each bin
             bin_centers[0] =  (bin_bounds[0]+stemp[0]) / 2.0        
