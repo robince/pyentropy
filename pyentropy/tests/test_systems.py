@@ -79,7 +79,7 @@ def test_1d_qe():
     yield do_1d_check, 'qe', 'plugin'
 
 def test_1d_qe_pt():
-    yield do_1d_check, 'plugin', 'pt'
+    yield do_1d_check, 'qe', 'pt'
 
 #
 # test SortedDiscreteSystem with simple 1D input, output
@@ -128,7 +128,7 @@ def test_1d_qe_sorted():
     yield do_1d_check, 'qe', 'plugin'
 
 def test_1d_qe_pt_sorted():
-    yield do_1d_check, 'plugin', 'pt'
+    yield do_1d_check_sorted, 'qe', 'pt'
 
 #
 # toy system to check decomposition, PiX construction etc.

@@ -354,7 +354,7 @@ class AmariSolve:
         if eta_given:
             eta_sampled = Pr[:l]
         else:
-            eta_sampled = Asmall.matvec(Pr[1:])
+            eta_sampled = Asmall*Pr[1:]
 
         if jacobian:
             self.optout = opt.fsolve(sf, x0, (Asmall,Bsmall,eta_sampled, l), 
@@ -382,20 +382,20 @@ class AmariSolve:
         return Psolve
 
     def _solvefunc(self, theta_un, Asmall, Bsmall, eta_sampled, l):
-        b = np.exp(Bsmall.matvec(theta_un))
-        y = eta_sampled - ( Asmall.matvec(b) / (b.sum()+1) )
+        b = np.exp(Bsmall*theta_un)
+        y = eta_sampled - ( (Asmall*b) / (b.sum()+1) )
         return y
 
     def _jacobian(self, theta, Asmall, Bsmall, eta_sampled, l):
-        x = np.exp(Bsmall.matvec(theta))
-        p = Asmall.matvec(x)
+        x = np.exp(Bsmall*theta)
+        p = Asmall*x
         q = x.sum() + 1
 
         J = np.outer(p,p)
         xd = sparse.spdiags(x,0,x.size,x.size,format='csc')
         qdp = (Asmall * xd) * Bsmall
         qdp *= q
-        J -= qdp
+        J = J - qdp
         J /= (q*q)
 
         return J
@@ -403,7 +403,7 @@ class AmariSolve:
     def _p_from_theta(self, theta):
         """Internal version - stays in dim space (missing p[0])"""
         pnorm = lambda p: ( p / (p.sum()+1) )
-        return pnorm(np.exp(self.A.T.matvec(theta)))
+        return pnorm(np.exp(self.A.T*theta))
 
     def p_from_theta(self, theta):
         """Return full ``fdim`` p-vector from ``fdim-1`` length theta"""
@@ -425,7 +425,7 @@ class AmariSolve:
 
     def eta_from_p(self, p):
         """Return eta-vector (marginals) from full probability vector"""
-        return self.A.matvec(p[1:])
+        return self.A*p[1:]
 
 
 def inscol(x,h,n):
