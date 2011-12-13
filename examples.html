@@ -1,0 +1,233 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Examples (Getting Started Guide) &mdash; pyEntropy v0.4.0 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyEntropy v0.4.0 documentation" href="index.html" />
+    <link rel="next" title="Entropy, Information and Bias Correction Primer" href="entropy.html" />
+    <link rel="prev" title="Installation and Requirements" href="install.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="entropy.html" title="Entropy, Information and Bias Correction Primer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation and Requirements"
+             accesskey="P">previous</a> |</li>
+  <li><a href="http://code.google.com/p/pyentropy">Project Home</a> |&nbsp;</li>
+  <li><a href="index.html">Documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Examples (Getting Started Guide)</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#discretesystem">DiscreteSystem</a></li>
+<li><a class="reference internal" href="#sorteddiscretesystem">SortedDiscreteSystem</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">Installation and Requirements</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="entropy.html"
+                        title="next chapter">Entropy, Information and Bias Correction Primer</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="examples-getting-started-guide">
+<h1>Examples (Getting Started Guide)<a class="headerlink" href="#examples-getting-started-guide" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>There are currently two different classes to represent your system and
+calculate the entropies.</p>
+<div class="section" id="discretesystem">
+<h3><a class="reference external" href="api.html#pyentropy.systems.DiscreteSystem">DiscreteSystem</a><a class="headerlink" href="#discretesystem" title="Permalink to this headline">¶</a></h3>
+<p>This is the most general class. It takes two integer arrays of inputs X and Y
+and is initiliased in the following way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DiscreteSystem</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X_dims</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Y_dims</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>X, which usually represents response for neural data, should be of dimensions
+<tt class="docutils literal"><span class="pre">(Xn,</span> <span class="pre">T)</span></tt> where Xn is the number of variables (cells) and T is the number of
+trials. X takes integer values <tt class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;</span> <span class="pre">X</span> <span class="pre">&lt;</span> <span class="pre">Xm</span></tt>. <tt class="docutils literal"><span class="pre">X_dims</span></tt> is a tuple <tt class="docutils literal"><span class="pre">(Xn,</span>
+<span class="pre">Xm)</span></tt> (note this is not the dimensions of the data vector with trials, but the parameters of the discrete probability space).</p>
+<p>Y, which usually represents stimulus for neural data, should be of dimensions
+<tt class="docutils literal"><span class="pre">(Yn,</span> <span class="pre">T)</span></tt> where Yn is the number of stimulus variables (usually 1) and T is
+the number of trials. Y takes integer values <tt class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;</span> <span class="pre">Y</span> <span class="pre">&lt;</span> <span class="pre">Ym</span></tt>. <tt class="docutils literal"><span class="pre">Y_dims</span></tt> is a
+tuple <tt class="docutils literal"><span class="pre">(Yn,</span> <span class="pre">Ym)</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In general, X and Y are completely interchangable (due to symmetry of
+mutual information), but it is highly recommended that you choose Y to be
+the space with smaller dimension because of the way the conditional
+distributions are calculated. X and Y can be presented in any order, the
+only requirement is that the trials match up (ie <tt class="docutils literal"><span class="pre">X[:,t]</span></tt> and <tt class="docutils literal"><span class="pre">[Y:,t]</span></tt>
+both correspond to the values of the system for the same
+trial/observation).</p>
+</div>
+</div>
+<div class="section" id="sorteddiscretesystem">
+<h3><a class="reference external" href="api.html#pyentropy.systems.SortedDiscreteSystem">SortedDiscreteSystem</a><a class="headerlink" href="#sorteddiscretesystem" title="Permalink to this headline">¶</a></h3>
+<p>In many cases, the data are available sorted by input (Y value). In this case
+the response conditional distributions can be calculated in a much more
+efficient way. The class is initiliased in the following way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SortedDiscreteSystem</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X_dims</span><span class="p">,</span> <span class="n">Ym</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>X is as described above for DiscreteSystem. Ym is the size of of the Y space
+finite alphabet (i.e. number of possible Y values) and Ny is an array of length
+Ym listing the number of trials available in for each Y value (in the order
+that the X values are presented). i.e.  <tt class="docutils literal"><span class="pre">X[0:Ny[0]]</span></tt> contains trials for Y=0,
+<tt class="docutils literal"><span class="pre">X[Ny[0]:Ny[1]]</span></tt> contains trials for Y=1 etc.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All features in pyEntropy are for calculating entropies and mutual
+information on discrete spaces. This is why the inputs must be integers.
+These integers are labels for the elements of the discrete space, they
+have no numerical value. If you&#8217;re input data is continuous, it must first
+be quantised using <a class="reference internal" href="api.html#pyentropy.quantise" title="pyentropy.quantise"><tt class="xref py py-func docutils literal"><span class="pre">pyentropy.quantise()</span></tt></a> to a suitable discrete
+representation.</p>
+</div>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example <a class="reference external" href="http://ipython.scipy.org">ipython</a> session for a simple
+example. This example is one of the unit tests.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">In [2]: </span><span class="kn">from</span> <span class="nn">pyentropy</span> <span class="kn">import</span> <span class="n">DiscreteSystem</span>
+<span class="c"># generate random input</span>
+<span class="gp">In [3]: </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
+<span class="c"># corrupt half of output</span>
+<span class="gp">In [4]: </span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">In [5]: </span><span class="n">indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))[:</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">In [6]: </span><span class="n">y</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="c"># setup system and calculate entropies</span>
+<span class="gp">In [7]: </span><span class="n">s</span> <span class="o">=</span> <span class="n">DiscreteSystem</span><span class="p">(</span><span class="n">x</span><span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">y</span><span class="p">,(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="gp">In [8]: </span><span class="n">s</span><span class="o">.</span><span class="n">calculate_entropies</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s">&#39;plugin&#39;</span><span class="p">,</span> <span class="n">calc</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;HX&#39;</span><span class="p">,</span> <span class="s">&#39;HXY&#39;</span><span class="p">])</span>
+<span class="gp">In [9]: </span><span class="n">s</span><span class="o">.</span><span class="n">I</span><span class="p">()</span>
+<span class="gr">Out[9]: </span><span class="mf">0.91243680717436071</span>
+<span class="gp">In [10]: </span><span class="n">s</span><span class="o">.</span><span class="n">calculate_entropies</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s">&#39;pt&#39;</span><span class="p">,</span> <span class="n">calc</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;HX&#39;</span><span class="p">,</span> <span class="s">&#39;HXY&#39;</span><span class="p">])</span>
+<span class="gp">In [11]: </span><span class="n">s</span><span class="o">.</span><span class="n">I</span><span class="p">()</span>
+<span class="gr">Out[11]: </span><span class="mf">0.90659389225876152</span>
+<span class="gp">In [12]: </span><span class="n">s</span><span class="o">.</span><span class="n">calculate_entropies</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s">&#39;qe&#39;</span><span class="p">,</span> <span class="n">calc</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;HX&#39;</span><span class="p">,</span> <span class="s">&#39;HXY&#39;</span><span class="p">])</span>
+<span class="gp">In [13]: </span><span class="n">s</span><span class="o">.</span><span class="n">I</span><span class="p">()</span>
+<span class="gr">Out[13]: </span><span class="mf">0.90641575663968688</span>
+<span class="gp">In [14]: </span><span class="n">s</span><span class="o">.</span><span class="n">calculate_entropies</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s">&#39;nsb&#39;</span><span class="p">,</span> <span class="n">calc</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;HX&#39;</span><span class="p">,</span> <span class="s">&#39;HXY&#39;</span><span class="p">])</span>
+<span class="gp">In [15]: </span><span class="n">s</span><span class="o">.</span><span class="n">I</span><span class="p">()</span>
+<span class="gr">Out[15]: </span><span class="mf">0.90307230696261565</span>
+<span class="c"># true value</span>
+<span class="gp">In [16]: </span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="o">-</span><span class="mi">9</span><span class="o">*</span><span class="mf">0.05</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.55</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="mf">0.55</span><span class="p">))</span>
+<span class="gr">Out[16]: </span><span class="mf">0.90268739025051348</span>
+</pre></div>
+</div>
+<p>This example simulates a noisy communication channel which randomly corrupts
+50% of the observations.</p>
+<p>A more involved example script, which produces the data and plots for Figure 1
+of</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">Ince, R. A. A., Petersen, R. S., Swan, D. C. and Panzeri, S. (2009)</div>
+<div class="line">&#8220;Python for Information Theoretic Analysis of Neural Data&#8221;</div>
+<div class="line">Frontiers in Neuroinformatics <strong>3</strong>:4</div>
+</div>
+</div></blockquote>
+<p>can be found <a class="reference external" href="http://code.google.com/p/pyentropy/wiki/SupplementalData">here</a>.
+For more information on the entropy values and bias corrections which can be
+selected see <a class="reference internal" href="entropy.html#primer"><em>Entropy, Information and Bias Correction Primer</em></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="entropy.html" title="Entropy, Information and Bias Correction Primer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation and Requirements"
+             >previous</a> |</li>
+  <li><a href="http://code.google.com/p/pyentropy">Project Home</a> |&nbsp;</li>
+  <li><a href="index.html">Documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Robin Ince.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

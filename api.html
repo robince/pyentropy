@@ -1,0 +1,886 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Module Reference &mdash; pyEntropy v0.4.0 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyEntropy v0.4.0 documentation" href="index.html" />
+    <link rel="prev" title="Entropy, Information and Bias Correction Primer" href="entropy.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="entropy.html" title="Entropy, Information and Bias Correction Primer"
+             accesskey="P">previous</a> |</li>
+  <li><a href="http://code.google.com/p/pyentropy">Project Home</a> |&nbsp;</li>
+  <li><a href="index.html">Documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Module Reference</a><ul>
+<li><a class="reference internal" href="#module-pyentropy.systems"><tt class="docutils literal"><span class="pre">pyentropy</span></tt> &#8211; Core information theoretic functionality</a><ul>
+<li><a class="reference internal" href="#basesystem"><tt class="docutils literal"><span class="pre">BaseSystem</span></tt></a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#discretesystem"><tt class="docutils literal"><span class="pre">DiscreteSystem</span></tt></a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#sorteddiscretesystem"><tt class="docutils literal"><span class="pre">SortedDiscreteSystem</span></tt></a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#utility-functions">Utility Functions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pyentropy.maxent"><tt class="docutils literal"><span class="pre">pyentropy.maxent</span></tt> &#8211; Finite Alphabet Maximum-Entropy Solutions</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="entropy.html"
+                        title="previous chapter">Entropy, Information and Bias Correction Primer</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-reference">
+<h1>Module Reference<a class="headerlink" href="#module-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pyentropy.systems">
+<span id="pyentropy-core-information-theoretic-functionality"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">pyentropy</span></tt> &#8211; Core information theoretic functionality<a class="headerlink" href="#module-pyentropy.systems" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="basesystem">
+<h3><a class="reference internal" href="#pyentropy.systems.BaseSystem" title="pyentropy.systems.BaseSystem"><tt class="xref py py-class docutils literal"><span class="pre">BaseSystem</span></tt></a><a class="headerlink" href="#basesystem" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyentropy.systems.BaseSystem">
+<em class="property">class </em><tt class="descclassname">pyentropy.systems.</tt><tt class="descname">BaseSystem</tt><a class="headerlink" href="#pyentropy.systems.BaseSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base functionality for entropy calculations common to all systems</p>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#pyentropy.systems.BaseSystem.I" title="pyentropy.systems.BaseSystem.I"><tt class="xref py py-obj docutils literal"><span class="pre">I</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#pyentropy.systems.BaseSystem.Ish" title="pyentropy.systems.BaseSystem.Ish"><tt class="xref py py-obj docutils literal"><span class="pre">Ish</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#pyentropy.systems.BaseSystem.Ishush" title="pyentropy.systems.BaseSystem.Ishush"><tt class="xref py py-obj docutils literal"><span class="pre">Ishush</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#pyentropy.systems.BaseSystem.Ispike" title="pyentropy.systems.BaseSystem.Ispike"><tt class="xref py py-obj docutils literal"><span class="pre">Ispike</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#pyentropy.systems.BaseSystem.calculate_entropies" title="pyentropy.systems.BaseSystem.calculate_entropies"><tt class="xref py py-obj docutils literal"><span class="pre">calculate_entropies</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#pyentropy.systems.BaseSystem.pola_decomp" title="pyentropy.systems.BaseSystem.pola_decomp"><tt class="xref py py-obj docutils literal"><span class="pre">pola_decomp</span></tt></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyentropy.systems.BaseSystem.I">
+<tt class="descname">I</tt><big>(</big><em>corr=None</em><big>)</big><a class="headerlink" href="#pyentropy.systems.BaseSystem.I" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to compute mutual information</p>
+<p>Must have already computed required entropies [&#8216;HX&#8217;, &#8216;HXY&#8217;]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
+<dt>corr <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If provided use the entropies from this correction rather than
+the default values in self.H</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyentropy.systems.BaseSystem.Ish">
+<tt class="descname">Ish</tt><big>(</big><em>corr=None</em><big>)</big><a class="headerlink" href="#pyentropy.systems.BaseSystem.Ish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to compute shuffled mutual information
+estimate</p>
+<p>Must have already computed required entropies
+[&#8216;HX&#8217;, &#8216;HiXY&#8217;, &#8216;HshXY&#8217;, &#8216;HXY&#8217;]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
+<dt>corr <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If provided use the entropies from this correction rather than
+the default values in self.H</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyentropy.systems.BaseSystem.Ishush">
+<tt class="descname">Ishush</tt><big>(</big><em>corr=None</em><big>)</big><a class="headerlink" href="#pyentropy.systems.BaseSystem.Ishush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to compute full shuffled mutual information
+estimate</p>
+<p>Must have already computed required entropies
+[&#8216;HX&#8217;, &#8216;SiHXi&#8217;, &#8216;HshX&#8217;, &#8216;HiXY&#8217;, &#8216;HshXY&#8217;, &#8216;HXY&#8217;]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
+<dt>corr <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If provided use the entropies from this correction rather than
+the default values in self.H</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyentropy.systems.BaseSystem.Ispike">
+<tt class="descname">Ispike</tt><big>(</big><big>)</big><a class="headerlink" href="#pyentropy.systems.BaseSystem.Ispike" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adelman (2003) style information per spike</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyentropy.systems.BaseSystem.calculate_entropies">
+<tt class="descname">calculate_entropies</tt><big>(</big><em>method='plugin', sampling='naive', calc=['HX', 'HXY'], **kwargs</em><big>)</big><a class="headerlink" href="#pyentropy.systems.BaseSystem.calculate_entropies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate entropies of the system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
+<dt>method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;qe&#8217;, &#8216;nsb&#8217;}</span></dt>
+<dd><p class="first last">Bias correction method to use</p>
+</dd>
+<dt>sampling <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;naive&#8217;, &#8216;kt&#8217;, &#8216;beta:x&#8217;}, optional</span></dt>
+<dd><p class="first last">Sampling method to use. &#8216;naive&#8217; is the standard histrogram method.
+&#8216;beta:x&#8217; is for an add-constant beta estimator, with beta value
+following the colon eg &#8216;beta:0.01&#8217; <a class="reference internal" href="#r1">[R1]</a>. &#8216;kt&#8217; is for the 
+Krichevsky-Trofimov estimator <a class="reference internal" href="#r2">[R2]</a>, which is equivalent to 
+&#8216;beta:0.5&#8217;.</p>
+</dd>
+<dt>calc <span class="classifier-delimiter">:</span> <span class="classifier">list of strs</span></dt>
+<dd><p class="first last">List of entropy values to calculate from (&#8216;HX&#8217;, &#8216;HY&#8217;, &#8216;HXY&#8217;, 
+&#8216;SiHXi&#8217;, &#8216;HiX&#8217;, &#8216;HshX&#8217;, &#8216;HiXY&#8217;, &#8216;HshXY&#8217;, &#8216;ChiX&#8217;, &#8216;HXY1&#8217;,&#8217;ChiXY1&#8217;)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Keywords :</th><td class="field-body"><dl class="first docutils">
+<dt>qe_method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;nsb&#8217;}, optional</span></dt>
+<dd><p class="first last">Method argument to be passed for QE calculation (&#8216;pt&#8217;, &#8216;nsb&#8217;). 
+Allows combination of QE with other corrections.</p>
+</dd>
+<dt>methods <span class="classifier-delimiter">:</span> <span class="classifier">list of strs, optional</span></dt>
+<dd><p class="first last">If present, method argument will be ignored, and all corrections 
+in the list will be calculated. Use to comparing results of 
+different methods with one calculation pass.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><dl class="first last docutils">
+<dt>self.H <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first last">Dictionary of computed values.</p>
+</dd>
+<dt>self.H_method <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first last">Dictionary of computed values using &#8216;method&#8217;.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li>If the PT method is chosen with outputs &#8216;HiX&#8217; or &#8216;ChiX&#8217; no bias 
+correction will be performed for these terms.</li>
+</ul>
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="r1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[R1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> T. Schurmann and P. Grassberger, &#8220;Entropy estimation of 
+symbol sequences,&#8221; Chaos,vol. 6, no. 3, pp. 414&#8211;427, 1996.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="r2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[R2]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> R. Krichevsky and V. Trofimov, &#8220;The performance of universal 
+encoding,&#8221; IEEE Trans. Information Theory, vol. 27, no. 2, 
+pp. 199&#8211;207, Mar. 1981.</td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyentropy.systems.BaseSystem.pola_decomp">
+<tt class="descname">pola_decomp</tt><big>(</big><big>)</big><a class="headerlink" href="#pyentropy.systems.BaseSystem.pola_decomp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function for Pola breakdown</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="discretesystem">
+<h3><a class="reference internal" href="#pyentropy.systems.DiscreteSystem" title="pyentropy.systems.DiscreteSystem"><tt class="xref py py-class docutils literal"><span class="pre">DiscreteSystem</span></tt></a><a class="headerlink" href="#discretesystem" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyentropy.systems.DiscreteSystem">
+<em class="property">class </em><tt class="descclassname">pyentropy.systems.</tt><tt class="descname">DiscreteSystem</tt><big>(</big><em>X</em>, <em>X_dims</em>, <em>Y</em>, <em>Y_dims</em>, <em>qe_shuffle=True</em><big>)</big><a class="headerlink" href="#pyentropy.systems.DiscreteSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyentropy.systems.BaseSystem" title="pyentropy.systems.BaseSystem"><tt class="xref py py-class docutils literal"><span class="pre">pyentropy.systems.BaseSystem</span></tt></a></p>
+<p>Class to hold probabilities and calculate entropies of 
+a discrete stochastic system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Attributes :</th><td class="field-body"><dl class="first last docutils">
+<dt>PXY <span class="classifier-delimiter">:</span> <span class="classifier">(X_dim, Y_dim)</span></dt>
+<dd><p class="first last">Conditional probability vectors on decimalised space P(X|Y). 
+<tt class="docutils literal"><span class="pre">PXY[:,i]</span></tt> is X probability distribution conditional on <tt class="docutils literal"><span class="pre">Y==i</span></tt>.</p>
+</dd>
+<dt>PX <span class="classifier-delimiter">:</span> <span class="classifier">(X_dim,) </span></dt>
+<dd><p class="first last">Unconditional decimalised X probability.</p>
+</dd>
+<dt>PY <span class="classifier-delimiter">:</span> <span class="classifier">(Y_dim,)</span></dt>
+<dd><p class="first last">Unconditional decimalised Y probability.</p>
+</dd>
+<dt>PXi <span class="classifier-delimiter">:</span> <span class="classifier">(X_m, X_n)</span></dt>
+<dd><p class="first last">Unconditional probability distributions for individual X components. 
+<tt class="docutils literal"><span class="pre">PXi[i,j]</span> <span class="pre">=</span> <span class="pre">P(X_i==j)</span></tt></p>
+</dd>
+<dt>PXiY <span class="classifier-delimiter">:</span> <span class="classifier">(X_m, X_n, Y_dim)</span></dt>
+<dd><p class="first last">Conditional probability distributions for individual X compoenents.
+<tt class="docutils literal"><span class="pre">PXiY[i,j,k]</span> <span class="pre">=</span> <span class="pre">P(X_i==j</span> <span class="pre">|</span> <span class="pre">Y==k)</span></tt></p>
+</dd>
+<dt>PiX <span class="classifier-delimiter">:</span> <span class="classifier">(X_dim,)</span></dt>
+<dd><p class="first last"><tt class="docutils literal"><span class="pre">Pind(X)</span> <span class="pre">=</span> <span class="pre">&lt;Pind(X|y)&gt;_y</span></tt></p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">I</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Ish</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Ishush</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Ispike</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">calculate_entropies</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">pola_decomp</span></tt></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyentropy.systems.DiscreteSystem.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>X</em>, <em>X_dims</em>, <em>Y</em>, <em>Y_dims</em>, <em>qe_shuffle=True</em><big>)</big><a class="headerlink" href="#pyentropy.systems.DiscreteSystem.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check and assign inputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
+<dt>X <span class="classifier-delimiter">:</span> <span class="classifier">(X_n, t)  int array</span></dt>
+<dd><p class="first last">Array of measured input values. X_n variables in X space, t trials</p>
+</dd>
+<dt>X_dims <span class="classifier-delimiter">:</span> <span class="classifier">tuple (n, m)</span></dt>
+<dd><p class="first last">Dimension of X (input) space; length n, base m words</p>
+</dd>
+<dt>Y <span class="classifier-delimiter">:</span> <span class="classifier">(Y_n, t) int array</span></dt>
+<dd><p class="first last">Array of corresponding measured output values. Y_n variables in Y
+space, t trials</p>
+</dd>
+<dt>Y_dims <span class="classifier-delimiter">:</span> <span class="classifier">tuple (n ,m)</span></dt>
+<dd><p class="first last">Dimension of Y (output) space; length n, base m words</p>
+</dd>
+<dt>qe_shuffle <span class="classifier-delimiter">:</span> <span class="classifier">{True, False}, optional</span></dt>
+<dd><p class="first last">Set to False if trials already in random order, to skip shuffling
+step in QE. Leave as True if trials have structure (ie one stimuli 
+after another).</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="sorteddiscretesystem">
+<h3><a class="reference internal" href="#pyentropy.systems.SortedDiscreteSystem" title="pyentropy.systems.SortedDiscreteSystem"><tt class="xref py py-class docutils literal"><span class="pre">SortedDiscreteSystem</span></tt></a><a class="headerlink" href="#sorteddiscretesystem" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pyentropy.systems.SortedDiscreteSystem">
+<em class="property">class </em><tt class="descclassname">pyentropy.systems.</tt><tt class="descname">SortedDiscreteSystem</tt><big>(</big><em>X</em>, <em>X_dims</em>, <em>Y_m</em>, <em>Ny</em><big>)</big><a class="headerlink" href="#pyentropy.systems.SortedDiscreteSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pyentropy.systems.DiscreteSystem" title="pyentropy.systems.DiscreteSystem"><tt class="xref py py-class docutils literal"><span class="pre">pyentropy.systems.DiscreteSystem</span></tt></a></p>
+<p>Class to hold probabilities and calculate entropies of a discrete 
+stochastic system when the inputs are available already sorted 
+by stimulus.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Attributes :</th><td class="field-body"><dl class="first last docutils">
+<dt>PXY <span class="classifier-delimiter">:</span> <span class="classifier">(X_dim, Y_dim)</span></dt>
+<dd><p class="first last">Conditional probability vectors on decimalised space P(X|Y). 
+<tt class="docutils literal"><span class="pre">PXY[:,i]</span></tt> is X probability distribution conditional on <tt class="docutils literal"><span class="pre">Y==i</span></tt>.</p>
+</dd>
+<dt>PX <span class="classifier-delimiter">:</span> <span class="classifier">(X_dim,) </span></dt>
+<dd><p class="first last">Unconditional decimalised X probability.</p>
+</dd>
+<dt>PY <span class="classifier-delimiter">:</span> <span class="classifier">(Y_dim,)</span></dt>
+<dd><p class="first last">Unconditional decimalised Y probability.</p>
+</dd>
+<dt>PXi <span class="classifier-delimiter">:</span> <span class="classifier">(X_m, X_n)</span></dt>
+<dd><p class="first last">Unconditional probability distributions for individual X components. 
+<tt class="docutils literal"><span class="pre">PXi[i,j]</span> <span class="pre">=</span> <span class="pre">P(X_i==j)</span></tt></p>
+</dd>
+<dt>PXiY <span class="classifier-delimiter">:</span> <span class="classifier">(X_m, X_n, Y_dim)</span></dt>
+<dd><p class="first last">Conditional probability distributions for individual X compoenents.
+<tt class="docutils literal"><span class="pre">PXiY[i,j,k]</span> <span class="pre">=</span> <span class="pre">P(X_i==j</span> <span class="pre">|</span> <span class="pre">Y==k)</span></tt></p>
+</dd>
+<dt>PiX <span class="classifier-delimiter">:</span> <span class="classifier">(X_dim,)</span></dt>
+<dd><p class="first last"><tt class="docutils literal"><span class="pre">Pind(X)</span> <span class="pre">=</span> <span class="pre">&lt;Pind(X|y)&gt;_y</span></tt></p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">I</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Ish</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Ishush</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">Ispike</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">calculate_entropies</span></tt></td>
+<td></td>
+</tr>
+<tr><td><tt class="xref py py-obj docutils literal"><span class="pre">pola_decomp</span></tt></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyentropy.systems.SortedDiscreteSystem.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>X</em>, <em>X_dims</em>, <em>Y_m</em>, <em>Ny</em><big>)</big><a class="headerlink" href="#pyentropy.systems.SortedDiscreteSystem.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check and assign inputs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
+<dt>X <span class="classifier-delimiter">:</span> <span class="classifier">(X_n, t) int array</span></dt>
+<dd><p class="first last">Array of measured input values. X_n variables in X space, t trials</p>
+</dd>
+<dt>X_dims <span class="classifier-delimiter">:</span> <span class="classifier">tuple (n,m)</span></dt>
+<dd><p class="first last">Dimension of X (input) space; length n, base m words</p>
+</dd>
+<dt>Y_m <span class="classifier-delimiter">:</span> <span class="classifier">int </span></dt>
+<dd><p class="first last">Finite alphabet size of single variable Y</p>
+</dd>
+<dt>Ny <span class="classifier-delimiter">:</span> <span class="classifier">(Y_m,) int array</span></dt>
+<dd><p class="first last">Array of number of trials available for each stimulus. This should
+be ordered the same as the order of X w.r.t. stimuli. 
+Y_t.sum() = X.shape[1]</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="utility-functions">
+<h3>Utility Functions<a class="headerlink" href="#utility-functions" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="pyentropy.base2dec">
+<tt class="descclassname">pyentropy.</tt><tt class="descname">base2dec</tt><big>(</big><em>x</em>, <em>b</em><big>)</big><a class="headerlink" href="#pyentropy.base2dec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert base-b words to decimal values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
+<dt>x <span class="classifier-delimiter">:</span> <span class="classifier">(t, n) int array</span></dt>
+<dd><p class="first last">Array of t length-n base-b words</p>
+</dd>
+<dt>b <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Base (size of finite alphabet)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><dl class="first last docutils">
+<dt>d_x: (t,)</dt>
+<dd><p class="first last">Array of decimalised values</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Note, this is the same as decimalise except input x is ordered 
+differently (here x[t,n] - ie columns are trials).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyentropy.dec2base">
+<tt class="descclassname">pyentropy.</tt><tt class="descname">dec2base</tt><big>(</big><em>x</em>, <em>b</em>, <em>digits</em><big>)</big><a class="headerlink" href="#pyentropy.dec2base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert decimal value to a row of values representing it in a 
+given base.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
+<dt>x <span class="classifier-delimiter">:</span> <span class="classifier">(t,) or (t,1) int array</span></dt>
+<dd><p class="first last">Array of decimilised values</p>
+</dd>
+<dt>b <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Base for convergence (finite alphabet size)</p>
+</dd>
+<dt>digits <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Length of output word for each trial</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><p class="first last">y : (t, digits)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyentropy.decimalise">
+<tt class="descclassname">pyentropy.</tt><tt class="descname">decimalise</tt><big>(</big><em>x</em>, <em>n</em>, <em>b</em><big>)</big><a class="headerlink" href="#pyentropy.decimalise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert base-b words to decimal values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
+<dt>x <span class="classifier-delimiter">:</span> <span class="classifier">(n, t) int array</span></dt>
+<dd><p class="first last">Array of t length-n base-b words</p>
+</dd>
+<dt>b <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Base (size of finite alphabet)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><dl class="first last docutils">
+<dt>d_x: (t,)</dt>
+<dd><p class="first last">Array of decimalised values</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyentropy.nsb_entropy">
+<tt class="descclassname">pyentropy.</tt><tt class="descname">nsb_entropy</tt><big>(</big><em>P</em>, <em>N</em>, <em>dim</em><big>)</big><a class="headerlink" href="#pyentropy.nsb_entropy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate NSB entropy of a probability distribution using
+external nsb-entropy program.</p>
+<p>Required <cite>nsb-entropy</cite> installed on system path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
+<dt>P <span class="classifier-delimiter">:</span> <span class="classifier">1D array</span></dt>
+<dd><p class="first last">Probability distribution vector</p>
+</dd>
+<dt>N <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Total number of trials</p>
+</dd>
+<dt>dim <span class="classifier-delimiter">:</span> <span class="classifier">int </span></dt>
+<dd><p class="first last">Full dimension of space</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyentropy.prob">
+<tt class="descclassname">pyentropy.</tt><tt class="descname">prob</tt><big>(</big><em>x</em>, <em>m</em>, <em>method='naive'</em><big>)</big><a class="headerlink" href="#pyentropy.prob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample probability of integer sequence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
+<dt>x <span class="classifier-delimiter">:</span> <span class="classifier">int array</span></dt>
+<dd><p class="first last">integer input sequence</p>
+</dd>
+<dt>m <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">alphabet size of input sequence (max(x)&lt;m)</p>
+</dd>
+<dt>method: {&#8216;naive&#8217;, &#8216;kt&#8217;, &#8216;beta:x&#8217;,&#8217;shrink&#8217;}</dt>
+<dd><p class="first last">Sampling method to use.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><dl class="first last docutils">
+<dt>Pr <span class="classifier-delimiter">:</span> <span class="classifier">float array</span></dt>
+<dd><p class="first last">array representing probability distribution
+Pr[i] = P(x=i)</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyentropy.quantise">
+<tt class="descclassname">pyentropy.</tt><tt class="descname">quantise</tt><big>(</big><em>input</em>, <em>m</em>, <em>uniform='sampling'</em>, <em>minmax=None</em>, <em>centers=True</em><big>)</big><a class="headerlink" href="#pyentropy.quantise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quantise 1D input vector into m levels (unsigned)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
+<dt>uniform <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;sampling&#8217;,&#8217;bins&#8217;}</span></dt>
+<dd><p class="first last">Determine whether quantisation is uniform for sampling (equally 
+occupied bins) or the bins have uniform widths</p>
+</dd>
+<dt>minmax <span class="classifier-delimiter">:</span> <span class="classifier">tuple (min,max)</span></dt>
+<dd><p class="first last">Specify the range for uniform=&#8217;bins&#8217; quantisation, rather than using
+min/max of input</p>
+</dd>
+<dt>centers <span class="classifier-delimiter">:</span> <span class="classifier">{True, False}</span></dt>
+<dd><p class="first last">Return vector of bin centers instead of bin bounds</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pyentropy.maxent">
+<span id="pyentropy-maxent-finite-alphabet-maximum-entropy-solutions"></span><h2><a class="reference internal" href="#module-pyentropy.maxent" title="pyentropy.maxent"><tt class="xref py py-mod docutils literal"><span class="pre">pyentropy.maxent</span></tt></a> &#8211; Finite Alphabet Maximum-Entropy Solutions<a class="headerlink" href="#module-pyentropy.maxent" title="Permalink to this headline">¶</a></h2>
+<p>Module for computing finite-alphabet maximum entropy solutions using a 
+coordinate transform method</p>
+<p>For details of the method see:</p>
+<blockquote>
+<div>Ince, R. A. A., Petersen, R. S., Swan, D. C., Panzeri, S., 2009
+&#8220;Python for Information Theoretic Analysis of Neural Data&#8221;, 
+Frontiers in Neuroinformatics 3:4 doi:10.3389/neuro.11.004.2009
+http://www.frontiersin.org/neuroinformatics/paper/10.3389/neuro.11/004.2009/</div></blockquote>
+<p>If you use this code in a published work, please cite the above paper.</p>
+<p>The generated transformation matrices for a given set of parameters are 
+stored to disk. The default location for the cache is a <tt class="docutils literal"><span class="pre">.pyentropy</span></tt> 
+(<tt class="docutils literal"><span class="pre">_pyentropy</span></tt> on windows) directory in the users home directory. To 
+override this and use a custom location (for example to share the folder 
+between users) you can put a configuration file <tt class="docutils literal"><span class="pre">.pyentropy.cfg</span></tt> 
+(<tt class="docutils literal"><span class="pre">pyentropy.cfg</span></tt> on windows) file in the home directory with the 
+following format:</p>
+<div class="highlight-python"><pre>[maxent]
+cache_dir = /path/to/cache</pre>
+</div>
+<p><a class="reference internal" href="#pyentropy.maxent.get_config_file" title="pyentropy.maxent.get_config_file"><tt class="xref py py-func docutils literal"><span class="pre">pyentropy.maxent.get_config_file()</span></tt></a> will show where it is looking for the config
+file.</p>
+<p>The probability vectors for a finite-alphabet space of <tt class="docutils literal"><span class="pre">n</span></tt> variables with
+<tt class="docutils literal"><span class="pre">m</span></tt> possible values is a length <tt class="docutils literal"><span class="pre">m**n-1</span></tt> vector ordered such that the 
+value of the index is equal to the decimal value of the input state 
+represented, when interpreted as a base m, length n word. eg for n=3,m=3:</p>
+<div class="highlight-python"><pre>P[0] = P(0,0,0)
+P[1] = P(0,0,1)
+P[2] = P(0,0,2)
+P[3] = P(0,1,0)
+P[4] = P(0,1,1) etc.</pre>
+</div>
+<p>This allows efficient vectorised conversion between probability index and 
+response word using base2dec, dec2base. The output is in the same format.</p>
+<dl class="class">
+<dt id="pyentropy.maxent.AmariSolve">
+<em class="property">class </em><tt class="descclassname">pyentropy.maxent.</tt><tt class="descname">AmariSolve</tt><big>(</big><em>n</em>, <em>m</em>, <em>filename='a_'</em>, <em>local=False</em>, <em>confirm=True</em><big>)</big><a class="headerlink" href="#pyentropy.maxent.AmariSolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for computing maximum-entropy solutions.</p>
+<p>When the class is initiliased the coordinate transform matrices are loaded
+from disk, if available, or generated.</p>
+<p>See module docstring for location of cache directory.</p>
+<p>An instance then exposes a solve method which returns the maximum entropy
+distribution preserving marginal constraints of the input probability 
+vector up to a given order k.</p>
+<p>This class computed the full transformation matrix and so can compute 
+solutions for any order.</p>
+<p class="rubric">Methods</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr><td><a class="reference internal" href="#pyentropy.maxent.AmariSolve.eta_from_p" title="pyentropy.maxent.AmariSolve.eta_from_p"><tt class="xref py py-obj docutils literal"><span class="pre">eta_from_p</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#pyentropy.maxent.AmariSolve.p_from_theta" title="pyentropy.maxent.AmariSolve.p_from_theta"><tt class="xref py py-obj docutils literal"><span class="pre">p_from_theta</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#pyentropy.maxent.AmariSolve.solve" title="pyentropy.maxent.AmariSolve.solve"><tt class="xref py py-obj docutils literal"><span class="pre">solve</span></tt></a></td>
+<td></td>
+</tr>
+<tr><td><a class="reference internal" href="#pyentropy.maxent.AmariSolve.theta_from_p" title="pyentropy.maxent.AmariSolve.theta_from_p"><tt class="xref py py-obj docutils literal"><span class="pre">theta_from_p</span></tt></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pyentropy.maxent.AmariSolve.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>n</em>, <em>m</em>, <em>filename='a_'</em>, <em>local=False</em>, <em>confirm=True</em><big>)</big><a class="headerlink" href="#pyentropy.maxent.AmariSolve.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup transformation matrix for given parameter set.</p>
+<p>If existing matrix file is found, load the (sparse) transformation
+matrix A, otherwise generate it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first last docutils">
+<dt>n <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">number of variables in the system</p>
+</dd>
+<dt>m <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">size of finite alphabet (number of symbols)</p>
+</dd>
+<dt>filename <span class="classifier-delimiter">:</span> <span class="classifier">{str, None}, optional</span></dt>
+<dd><p class="first last">filename to load/save (designed to be used by derived classes).</p>
+</dd>
+<dt>local <span class="classifier-delimiter">:</span> <span class="classifier">{False, True}, optional </span></dt>
+<dd><p class="first last">If True, then store/load arrays from &#8216;data/&#8217; directory in 
+current working directory. Otherwise use the package data dir
+(default ~/.pyentropy or ~/_pyentropy (windows))
+Can be overridden through ~/.pyentropy.cfg or ~/pyentropy.cfg 
+(windows)</p>
+</dd>
+<dt>confirm <span class="classifier-delimiter">:</span> <span class="classifier">{True, False}, optional</span></dt>
+<dd><p class="first last">Whether to prompt for confirmation before generating matrix</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyentropy.maxent.AmariSolve.solve">
+<tt class="descname">solve</tt><big>(</big><em>Pr</em>, <em>k</em>, <em>eta_given=False</em>, <em>ic_offset=-0.01</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pyentropy.maxent.AmariSolve.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find maxent distribution for a given order k</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
+<dt>Pr <span class="classifier-delimiter">:</span> <span class="classifier">(fdim,)</span></dt>
+<dd><p class="first last">probability distribution vector</p>
+</dd>
+<dt>k <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Order of interest (marginals up to this order constrained)</p>
+</dd>
+<dt>eta_given <span class="classifier-delimiter">:</span> <span class="classifier">{False, True}, optional</span></dt>
+<dd><p class="first last">Set this True if you are passing the marginals in Pr instead of 
+the probabilities</p>
+</dd>
+<dt>ic_offset <span class="classifier-delimiter">:</span> <span class="classifier">float, oprtional</span></dt>
+<dd><p class="first last">Initial condition offset for the numerical optimisation. If you
+are having trouble getting convergence, try playing with this. 
+Usually making it smaller is effective (ie -0.00001)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><dl class="first last docutils">
+<dt>Psolve <span class="classifier-delimiter">:</span> <span class="classifier">(fdim,)</span></dt>
+<dd><p class="first last">probability distribution vector of k-th order maximum entropy
+solution</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyentropy.maxent.AmariSolve.theta_from_p">
+<tt class="descname">theta_from_p</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#pyentropy.maxent.AmariSolve.theta_from_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return theta vector from full probaility vector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyentropy.maxent.AmariSolve.eta_from_p">
+<tt class="descname">eta_from_p</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#pyentropy.maxent.AmariSolve.eta_from_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return eta-vector (marginals) from full probability vector</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pyentropy.maxent.AmariSolve.p_from_theta">
+<tt class="descname">p_from_theta</tt><big>(</big><em>theta</em><big>)</big><a class="headerlink" href="#pyentropy.maxent.AmariSolve.p_from_theta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return full <tt class="docutils literal"><span class="pre">fdim</span></tt> p-vector from <tt class="docutils literal"><span class="pre">fdim-1</span></tt> length theta</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pyentropy.maxent.get_config_file">
+<tt class="descclassname">pyentropy.maxent.</tt><tt class="descname">get_config_file</tt><big>(</big><big>)</big><a class="headerlink" href="#pyentropy.maxent.get_config_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the location and name of the config file for specifying
+the data cache dir. You can call this to find out where to put your
+config.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyentropy.maxent.get_data_dir">
+<tt class="descclassname">pyentropy.maxent.</tt><tt class="descname">get_data_dir</tt><big>(</big><big>)</big><a class="headerlink" href="#pyentropy.maxent.get_data_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the data cache dir to use to load and save precomputed matrices</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="entropy.html" title="Entropy, Information and Bias Correction Primer"
+             >previous</a> |</li>
+  <li><a href="http://code.google.com/p/pyentropy">Project Home</a> |&nbsp;</li>
+  <li><a href="index.html">Documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Robin Ince.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

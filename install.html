@@ -1,0 +1,156 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation and Requirements &mdash; pyEntropy v0.4.0 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyEntropy v0.4.0 documentation" href="index.html" />
+    <link rel="next" title="Examples (Getting Started Guide)" href="examples.html" />
+    <link rel="prev" title="pyEntropy" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples (Getting Started Guide)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="pyEntropy"
+             accesskey="P">previous</a> |</li>
+  <li><a href="http://code.google.com/p/pyentropy">Project Home</a> |&nbsp;</li>
+  <li><a href="index.html">Documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">pyEntropy</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="next chapter">Examples (Getting Started Guide)</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation-and-requirements">
+<h1>Installation and Requirements<a class="headerlink" href="#installation-and-requirements" title="Permalink to this headline">¶</a></h1>
+<p>pyEntropy requires a recent version of <a class="reference external" href="http://www.python.org">Python</a> and
+<a class="reference external" href="http://www.scipy.org/">NumPy</a>. Any Python &gt;2.5 and NumPy &gt; 1.3 should be
+fine, but the most recent releases are recommend. If you have any problems
+please email (or open an issue).</p>
+<p>The <a class="reference internal" href="api.html#module-pyentropy.maxent" title="pyentropy.maxent"><tt class="xref py py-mod docutils literal"><span class="pre">pyentropy.maxent</span></tt></a> module also requires
+<a class="reference external" href="http://www.scipy.org">SciPy</a>.</p>
+<p>For windows, running the installer should be all that is needed. On other
+platforms, uncompress the archive and run the following command:</p>
+<div class="highlight-python"><pre>python setup.py install</pre>
+</div>
+<p>This will install the package to the appropriate location of your Python
+installation. This package uses distutils; more details are available in the
+<a class="reference external" href="http://docs.python.org/install/index.html">python documentation</a>. Note that
+from Python 2.6 you can run:</p>
+<div class="highlight-python"><pre>python setup.py install --user</pre>
+</div>
+<p>to install to <tt class="docutils literal"><span class="pre">.local</span></tt> directory in the home directory. This is automatically
+added to PYTHONPATH and is the recommended way to install for a single user on
+UNIX systems (without root access).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You can test your installation by running <tt class="docutils literal"><span class="pre">pyentropy.test()</span></tt>. This runs
+a series of unit tests found in the tests directory.</p>
+</div>
+<p><a class="reference internal" href="api.html#module-pyentropy.maxent" title="pyentropy.maxent"><tt class="xref py py-mod docutils literal"><span class="pre">pyentropy.maxent</span></tt></a> stores generated transformation matrices for a given
+set of parameters are to disk. These files can get large so you should be aware
+that they are there. The default location for the cache is a <tt class="docutils literal"><span class="pre">.pyentropy</span></tt>
+(<tt class="docutils literal"><span class="pre">_pyentropy</span></tt> on windows) directory in the users home directory. To override
+this and use a custom location (for example to share the folder between users)
+you can put a configuration file <tt class="docutils literal"><span class="pre">.pyentropy.cfg</span></tt> (<tt class="docutils literal"><span class="pre">pyentropy.cfg</span></tt> on
+windows) file in the home directory with the following format:</p>
+<div class="highlight-python"><pre>[maxent]
+cache_dir = /path/to/cache</pre>
+</div>
+<p><a class="reference internal" href="api.html#pyentropy.maxent.get_config_file" title="pyentropy.maxent.get_config_file"><tt class="xref py py-func docutils literal"><span class="pre">pyentropy.maxent.get_config_file()</span></tt></a> will show where it is looking for the config
+file.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples (Getting Started Guide)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="pyEntropy"
+             >previous</a> |</li>
+  <li><a href="http://code.google.com/p/pyentropy">Project Home</a> |&nbsp;</li>
+  <li><a href="index.html">Documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Robin Ince.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

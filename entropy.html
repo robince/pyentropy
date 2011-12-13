@@ -1,0 +1,227 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Entropy, Information and Bias Correction Primer &mdash; pyEntropy v0.4.0 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.4.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pyEntropy v0.4.0 documentation" href="index.html" />
+    <link rel="next" title="Module Reference" href="api.html" />
+    <link rel="prev" title="Examples (Getting Started Guide)" href="examples.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="Module Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples (Getting Started Guide)"
+             accesskey="P">previous</a> |</li>
+  <li><a href="http://code.google.com/p/pyentropy">Project Home</a> |&nbsp;</li>
+  <li><a href="index.html">Documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Entropy, Information and Bias Correction Primer</a><ul>
+<li><a class="reference internal" href="#entropy-and-mutual-information">Entropy and Mutual Information</a><ul>
+<li><a class="reference internal" href="#information-breakdown">Information Breakdown</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bias">Bias</a><ul>
+<li><a class="reference internal" href="#origins-of-sampling-bias">Origins of sampling bias</a></li>
+<li><a class="reference internal" href="#bias-correction-methods">Bias correction methods</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pyentropy">pyEntropy</a><ul>
+<li><a class="reference internal" href="#bias-corrections">Bias Corrections</a><ul>
+<li><a class="reference internal" href="#which-method-should-i-use">Which method should I use?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#entropy-values">Entropy Values</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="examples.html"
+                        title="previous chapter">Examples (Getting Started Guide)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">Module Reference</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="entropy-information-and-bias-correction-primer">
+<span id="primer"></span><h1>Entropy, Information and Bias Correction Primer<a class="headerlink" href="#entropy-information-and-bias-correction-primer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="entropy-and-mutual-information">
+<h2>Entropy and Mutual Information<a class="headerlink" href="#entropy-and-mutual-information" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="information-breakdown">
+<h3>Information Breakdown<a class="headerlink" href="#information-breakdown" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="bias">
+<h2>Bias<a class="headerlink" href="#bias" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="origins-of-sampling-bias">
+<h3>Origins of sampling bias<a class="headerlink" href="#origins-of-sampling-bias" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="bias-correction-methods">
+<h3>Bias correction methods<a class="headerlink" href="#bias-correction-methods" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="pyentropy">
+<h2>pyEntropy<a class="headerlink" href="#pyentropy" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bias-corrections">
+<h3>Bias Corrections<a class="headerlink" href="#bias-corrections" title="Permalink to this headline">¶</a></h3>
+<p>pyEntropy currently implements the following bias correction methods, specified
+with <cite>method</cite> argument to
+<a class="reference internal" href="api.html#pyentropy.systems.BaseSystem.calculate_entropies" title="pyentropy.systems.BaseSystem.calculate_entropies"><tt class="xref py py-func docutils literal"><span class="pre">pyentropy.systems.BaseSystem.calculate_entropies()</span></tt></a>:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">plugin</span></tt></dt>
+<dd>The standard <em>plugin</em> or <em>naive</em> entropy estimator.</dd>
+<dt><tt class="docutils literal"><span class="pre">pt</span></tt></dt>
+<dd>Panzeri-Treves bias correction [PT96]. This is the Miller-Madow analytic
+correction, where the number of non-zero responses is estimated
+using a Bayesian procedure rather than the naive count, yielding much
+better results.</dd>
+<dt><tt class="docutils literal"><span class="pre">qe</span></tt></dt>
+<dd>Quadratic extrapolation [Strong98]. See above.</dd>
+<dt><tt class="docutils literal"><span class="pre">nsb</span></tt></dt>
+<dd>Nemenman-Shafee-Bialek method [NSB02].</dd>
+</dl>
+<div class="section" id="which-method-should-i-use">
+<h4>Which method should I use?<a class="headerlink" href="#which-method-should-i-use" title="Permalink to this headline">¶</a></h4>
+<p>This is a difficult question and is to some extent subjective, being a trade
+off between bias, variance and computational requirements. It is complicated by
+the fact that these factors are also affected by the statistics of the system
+being studied. Generally is you have a single variable X space the best results
+are obtained with the NSB estimator, but it is much slower to compute than the
+other methods. If you have a multi-variable X space, the best results are
+achieved with the shuffled estimator, corrected with either PT or QE. The best
+thing to do, if possible, is to test the methods with simulated data with
+similar statistics. Future versions of pyEntropy will include helper functions
+to make this easier.</p>
+</div>
+</div>
+<div class="section" id="entropy-values">
+<h3>Entropy Values<a class="headerlink" href="#entropy-values" title="Permalink to this headline">¶</a></h3>
+<p>pyEntropy currently implements the following entropy values, specified in
+<cite>calc</cite> argument to <a class="reference internal" href="api.html#pyentropy.systems.BaseSystem.calculate_entropies" title="pyentropy.systems.BaseSystem.calculate_entropies"><tt class="xref py py-func docutils literal"><span class="pre">pyentropy.systems.BaseSystem.calculate_entropies()</span></tt></a>:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">HX</span></tt></dt>
+<dd><span class="math">H(\mathbf{X})</span> &#8211; unconditional entropy of X.</dd>
+<dt><tt class="docutils literal"><span class="pre">HY</span></tt></dt>
+<dd><span class="math">H(Y)</span> &#8211; unconditional entropy of Y.</dd>
+<dt><tt class="docutils literal"><span class="pre">HshX</span></tt></dt>
+<dd><span class="math">H_{sh}(\mathbf{X})</span> &#8211; shuffle-decorrelated independent unconditional    entropy of X. (X components are shuffled).</dd>
+<dt><tt class="docutils literal"><span class="pre">SiHXi</span></tt></dt>
+<dd><span class="math">\sum_{i=1}^{Xm} H(X_{i})</span> &#8211; direct-decorrelated independent
+unconditional entropy X. Summing the individual entropies corresponds
+to constructing the analytic independent joint distribution (product
+of individual distributions).</dd>
+<dt><tt class="docutils literal"><span class="pre">HXY</span></tt></dt>
+<dd><span class="math">H(\mathbf{X}|Y)</span> &#8211; entropy of X conditional on Y.</dd>
+<dt><tt class="docutils literal"><span class="pre">HiXY</span></tt></dt>
+<dd><span class="math">H_{ind}(\mathbf{X}|Y) = \sum_{i=1}^{Xm} H(X_{i}|Y)</span> &#8211;
+direct-decorrelated independent conditional entropy.</dd>
+<dt><tt class="docutils literal"><span class="pre">HshXY</span></tt></dt>
+<dd><span class="math">H_{sh}(\mathbf{X}|Y)</span> &#8211; shuffle-decorrelated independent
+conditional entropy. X components are shuffled for each response Y (but not
+between responses).</dd>
+<dt><tt class="docutils literal"><span class="pre">HiX</span></tt></dt>
+<dd><span class="math">H_{ind}(\mathbf{X})</span> &#8211; unconditional direct-conditionally-decorrelated entropy of X. Entropy of <span class="math">P_{ind}(X) = \sum_{y \in Y}
+P(y) \prod_{i=1}^{Xm} P(X_{i}|y)</span></dd>
+<dt><tt class="docutils literal"><span class="pre">ChiXY</span></tt></dt>
+<dd><span class="math">\chi (\mathbf{X})</span> &#8211; cross entropy between <span class="math">P_{ind}(X)</span> and
+<span class="math">P(X)</span></dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="np-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="Module Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="examples.html" title="Examples (Getting Started Guide)"
+             >previous</a> |</li>
+  <li><a href="http://code.google.com/p/pyentropy">Project Home</a> |&nbsp;</li>
+  <li><a href="index.html">Documentation</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009, Robin Ince.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
