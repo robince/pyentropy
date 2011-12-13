@@ -224,7 +224,7 @@ class AmariSolve:
         self.row_counter     = 0
 
         for ordi in xrange(n+1):    
-            self.order_length[ordi] = (sp.comb(n, ordi+1, exact=1) * 
+            self.order_length[ordi] = (sp.misc.comb(n, ordi+1, exact=1) *
                                         ((m-1)**(ordi+1)))
             self.order_idx[ordi] = self.row_counter
             self.row_counter += self.order_length[ordi]
