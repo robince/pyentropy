@@ -119,13 +119,13 @@ def do_1d_check_sorted(method, qe_method):
     assert_array_equal(y, yc)
 
 def test_1d_plugin_sorted():
-    yield do_1d_check, 'plugin', None
+    yield do_1d_check_sorted, 'plugin', None
     
 def test_1d_pt_sorted():
-    yield do_1d_check, 'pt', None
+    yield do_1d_check_sorted, 'pt', None
 
 def test_1d_qe_sorted():
-    yield do_1d_check, 'qe', 'plugin'
+    yield do_1d_check_sorted, 'qe', 'plugin'
 
 def test_1d_qe_pt_sorted():
     yield do_1d_check_sorted, 'qe', 'pt'

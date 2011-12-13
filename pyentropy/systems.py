@@ -571,6 +571,7 @@ class DiscreteSystem(BaseSystem):
         if self.qe_shuffle:
             # need to shuffle to ensure even stimulus distribution for QE
             shuffle = np.random.permutation(self.N)
+            # fancy indexing makes a copy
             self.X = self.X[:,shuffle]
             self.Y = self.Y[:,shuffle]
 
@@ -759,10 +760,12 @@ class SortedDiscreteSystem(DiscreteSystem):
         if self.qe_shuffle:
             # need to shuffle to ensure even stimulus distribution for QE
             sstart = 0
+            oldX = self.X
+            self.X = np.zeros_like(oldX)
             for i in xrange(self.Y_m):
                 send = sstart + int(self.Ny[i])
                 shuffle = np.random.permutation(int(self.Ny[i]))
-                self.X[:,sstart:send] = self.X[:,sstart+shuffle]
+                self.X[:,sstart:send] = oldX[:,sstart+shuffle]
                 sstart = send
                 
     def _subsampled_instance(self, sub):
