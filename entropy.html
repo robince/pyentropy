@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Entropy, Information and Bias Correction Primer &mdash; pyEntropy v0.4.1 documentation</title>
+    <title>Entropy, Information and Bias Correction Primer &mdash; pyEntropy v0.5.0 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.1',
+        VERSION:     '0.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pyEntropy v0.4.1 documentation" href="index.html" />
+    <link rel="top" title="pyEntropy v0.5.0 documentation" href="index.html" />
     <link rel="next" title="Module Reference" href="api.html" />
     <link rel="prev" title="Examples (Getting Started Guide)" href="examples.html" /> 
   </head>
@@ -55,10 +55,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Entropy, Information and Bias Correction Primer</a><ul>
-<li><a class="reference internal" href="#entropy-and-mutual-information">Entropy and Mutual Information</a><ul>
-<li><a class="reference internal" href="#information-breakdown">Information Breakdown</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#entropy-and-mutual-information">Entropy and Mutual Information</a></li>
 <li><a class="reference internal" href="#bias">Bias</a><ul>
 <li><a class="reference internal" href="#origins-of-sampling-bias">Origins of sampling bias</a></li>
 <li><a class="reference internal" href="#bias-correction-methods">Bias correction methods</a></li>
@@ -107,17 +104,77 @@
 <span id="primer"></span><h1>Entropy, Information and Bias Correction Primer<a class="headerlink" href="#entropy-information-and-bias-correction-primer" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="entropy-and-mutual-information">
 <h2>Entropy and Mutual Information<a class="headerlink" href="#entropy-and-mutual-information" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="information-breakdown">
-<h3>Information Breakdown<a class="headerlink" href="#information-breakdown" title="Permalink to this headline">¶</a></h3>
-</div>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Entropy_(information_theory)">Entropy</a> is a
+measure of uncertainty.  This is a function of a discrete probability
+distribution and is defined as the expected value of the surprise.  The
+surprise of a particular observation is equal to log of the reciprocal of the
+probability of the observation &#8212; for an observation <span class="math">x</span> the surprise is
+<span class="math">-\log p(x)</span>.  An event with a large probability will have a small
+surprise (since it is relatively likely to occur); an event with a small
+probability will have a high surprise (since it is less likely to occur).  The
+entropy is then the average of this value over all possible observations,
+weighted by the probability of each observation.  For a finite discrete set,
+the distribution with maximum entropy is the uniform distribution, where each
+possible observation has an equal chance of occurrence, for example rolling a
+fair die.  Since in this case nothing can be predicted about the outcome of any
+particular observation, it is the most uncertain distribution possible.
+Similarly, the distribution with minimum entropy would be one where the
+probability of one specific event is equal to 1 and the probability of all
+other events is 0.  In this case, there is no uncertainty about any particular
+observation and the entropy is zero. In general, a more evenly distributed
+probability density will result in a distribution with higher entropy.</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Mutual_information">Mutual information</a> (or just
+information) is a function of two random variables (for example the input and
+output of a system).  It is defined as the average reduction in uncertainty
+(measured by entropy) about one of the random variables after the other is
+observed.  If the two variables are completely independent, then observing the
+outcome of one will have no effect on the uncertainty of the other, and hence
+the information between them is 0.  An alternative but equivalent definition is
+that information is the Kullbeck-Leibler divergence (a measure of distance
+between two probability distributions) between the joint distribution of the
+two variables, and the product of the individual distribution of each variables
+(the independent distribution).  It therefore quantifies how far the joint
+distribution is from independence, or how strongly the two variables are
+correlated.  When the logarithm used in the definition of the surprise is
+base-2, as is conventionally the case, the units of the information are called
+<em>bits</em>.  1 bit corresponds to a reduction of uncertainty of a factor of 2.
+For example, if a die is rolled and an observer is told that the resulting
+number is odd, this reduces the number of possible outcomes for this
+observation from 6 to 3 &#8212; this is 1 bit of information.</p>
 </div>
 <div class="section" id="bias">
 <h2>Bias<a class="headerlink" href="#bias" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="origins-of-sampling-bias">
 <h3>Origins of sampling bias<a class="headerlink" href="#origins-of-sampling-bias" title="Permalink to this headline">¶</a></h3>
+<p>Calculating entropy and information requires estimates of the underlying
+probability distributions which must be obtained from experimental
+observations. With an infinite amount of data, these distributions can be
+learned exactly, but when limited data is available, the probability estimates
+can be effected. For example, low probability events may not occur in the
+experimental sample, which results in the variability of the distribution being
+under estimated (the entropy is biased downwards).</p>
+<p>The bias of the entropy is a big problem since information is calculated as the
+difference of two entropies. This difference is often much smaller than the two
+entropies involved, so even a very small proportional bias error in the entropy
+can have a large effect on the information. Information is biased upwards,
+since of the two constituent entropy quantities, the second (negative term) has
+a larger downward bias. Intuitively, this can be because with a limited amount
+of data, spurious chance corrleations between the variables can artificially
+inflate the true information value.</p>
 </div>
 <div class="section" id="bias-correction-methods">
 <h3>Bias correction methods<a class="headerlink" href="#bias-correction-methods" title="Permalink to this headline">¶</a></h3>
+<p>There are a number of bias correction techniques that have been developed to
+address this problem.</p>
+<p>For more information see</p>
+<blockquote>
+<div><p>RAA Ince, RS Petersen, DC Swan and S Panzeri (2009) &#8220;Python for information
+theoretic analysis of neural data&#8221; <em>Frontiers in Neuroinformatics</em> <strong>3</strong> 4
+<a class="reference external" href="http://dx.doi.org/10.3389/neuro.11.004.2009">link</a></p>
+<p>S Panzeri, R Senatore, MA Montemurro and RS Petersen (2007) &#8220;Correcting for
+the sampling bias problem in spike train information measures&#8221; <em>Journal of
+Neurophysiology</em> <strong>98</strong>:3 1064-1072</p>
+</div></blockquote>
 </div>
 </div>
 <div class="section" id="pyentropy">
@@ -131,14 +188,14 @@ with <cite>method</cite> argument to
 <dt><tt class="docutils literal"><span class="pre">plugin</span></tt></dt>
 <dd>The standard <em>plugin</em> or <em>naive</em> entropy estimator.</dd>
 <dt><tt class="docutils literal"><span class="pre">pt</span></tt></dt>
-<dd>Panzeri-Treves bias correction [PT96]. This is the Miller-Madow analytic
+<dd>Panzeri-Treves bias correction <a class="reference internal" href="#pt96">[PT96]</a>. This is the Miller-Madow analytic
 correction, where the number of non-zero responses is estimated
 using a Bayesian procedure rather than the naive count, yielding much
 better results.</dd>
 <dt><tt class="docutils literal"><span class="pre">qe</span></tt></dt>
-<dd>Quadratic extrapolation [Strong98]. See above.</dd>
+<dd>Quadratic extrapolation <a class="reference internal" href="#strong98">[Strong98]</a>. See above.</dd>
 <dt><tt class="docutils literal"><span class="pre">nsb</span></tt></dt>
-<dd>Nemenman-Shafee-Bialek method [NSB02].</dd>
+<dd>Nemenman-Shafee-Bialek method <a class="reference internal" href="#nsb02">[NSB02]</a>.</dd>
 </dl>
 <div class="section" id="which-method-should-i-use">
 <h4>Which method should I use?<a class="headerlink" href="#which-method-should-i-use" title="Permalink to this headline">¶</a></h4>
@@ -186,6 +243,28 @@ P(y) \prod_{i=1}^{Xm} P(X_{i}|y)</span></dd>
 <dd><span class="math">\chi (\mathbf{X})</span> &#8211; cross entropy between <span class="math">P_{ind}(X)</span> and
 <span class="math">P(X)</span></dd>
 </dl>
+<table class="docutils citation" frame="void" id="pt96" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[PT96]</a></td><td>Panzeri, S and Treves, A (1996) &#8220;Analytical estimates of limited
+sampling biases in different infromation measures&#8221; <em>Network</em> <strong>7</strong>:1 87-107</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="strong98" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Strong98]</a></td><td>SP Strong, R Koberle, RR de Ruyter van Steveninck and W Bialek
+(1998) &#8220;Entropy and information in neural spike trains&#8221; <em>Physical review letters</em>
+<strong>80</strong>:1 197-200</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="nsb02" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[NSB02]</a></td><td>I Nemenman, F Shafee and W Bialek (2002) &#8220;Entropy and inference,
+revisted&#8221; <em>NIPS</em> <strong>14</strong> 95-100</td></tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>

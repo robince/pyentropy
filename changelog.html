@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Changelog &mdash; pyEntropy v0.4.1 documentation</title>
+    <title>Changelog &mdash; pyEntropy v0.5.0 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.1',
+        VERSION:     '0.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pyEntropy v0.4.1 documentation" href="index.html" /> 
+    <link rel="top" title="pyEntropy v0.5.0 documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -47,12 +47,13 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#id1">0.4.0 - 15/12/09</a></li>
-<li><a class="reference internal" href="#id2">0.3.3 - 7/10/09</a></li>
-<li><a class="reference internal" href="#id3">0.3.1 - 6/1/09</a></li>
-<li><a class="reference internal" href="#id4">0.3 - 6/1/09</a></li>
-<li><a class="reference internal" href="#id5">0.2 - 30/10/08</a></li>
-<li><a class="reference internal" href="#id6">0.1 - 21/9/08</a></li>
+<li><a class="reference internal" href="#id1">0.5.0</a></li>
+<li><a class="reference internal" href="#id2">0.4.0 - 15/12/09</a></li>
+<li><a class="reference internal" href="#id3">0.3.3 - 7/10/09</a></li>
+<li><a class="reference internal" href="#id4">0.3.1 - 6/1/09</a></li>
+<li><a class="reference internal" href="#id5">0.3 - 6/1/09</a></li>
+<li><a class="reference internal" href="#id6">0.2 - 30/10/08</a></li>
+<li><a class="reference internal" href="#id7">0.1 - 21/9/08</a></li>
 </ul>
 </li>
 </ul>
@@ -81,7 +82,15 @@
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
-<h2>0.4.0 - 15/12/09<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>0.5.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Add Spike Train Analysis Toolkit NSB implementation</li>
+<li>Add Ish-ush estimator</li>
+<li>quantise_discrete for rebinning discrete sequences</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>0.4.0 - 15/12/09<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Add HshX and Ish-ush estimator</li>
 <li>Major refactor and cleanup</li>
@@ -90,14 +99,14 @@
 <li>Add pyentropy.maxent - finite alphabet maximum entropy solutions</li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h2>0.3.3 - 7/10/09<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h2>0.3.3 - 7/10/09<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix serious bug with PiX construction (r54 r57)</li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>0.3.1 - 6/1/09<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>0.3.1 - 6/1/09<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Minor bug for 1D input (r44)</li>
 <li>Add direct Ispike calculation</li>
@@ -105,16 +114,16 @@
 <li>Fix nasty bug with shuffled information when used with QE (or if an instance is used more than once with shuffling) (r49)</li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h2>0.3 - 6/1/09<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>0.3 - 6/1/09<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Fix PT correction bug</li>
 <li>Add James-Stein shrinkage estimator</li>
 <li>This version used for plots for Frontiers paper</li>
 </ul>
 </div>
-<div class="section" id="id5">
-<h2>0.2 - 30/10/08<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h2>0.2 - 30/10/08<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Make pyentropy a package</li>
 <li>Distutils installation</li>
@@ -124,8 +133,8 @@
 <li>Optimise Bayescount function for PT method</li>
 </ul>
 </div>
-<div class="section" id="id6">
-<h2>0.1 - 21/9/08<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h2>0.1 - 21/9/08<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Initial Release. Basic Python code - <cite>DiscreteSystem</cite> class supports vector inputs, shuffling if necessary for QE.</li>
 </ul>

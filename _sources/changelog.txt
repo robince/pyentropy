@@ -4,6 +4,13 @@
 Changelog
 *********
 
+0.5.0
+-----
+
+* Add Spike Train Analysis Toolkit NSB implementation
+* Add Ish-ush estimator
+* quantise_discrete for rebinning discrete sequences
+
 0.4.0 - 15/12/09
 ----------------
 

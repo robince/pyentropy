@@ -44,6 +44,8 @@ Utility Functions
 
 .. autofunction:: pyentropy.quantise
 
+.. autofunction:: pyentropy.quantise_discrete
+
 
 
 :mod:`pyentropy.maxent` -- Finite Alphabet Maximum-Entropy Solutions

@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Module Reference &mdash; pyEntropy v0.4.1 documentation</title>
+    <title>Module Reference &mdash; pyEntropy v0.5.0 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.4.1',
+        VERSION:     '0.5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pyEntropy v0.4.1 documentation" href="index.html" />
+    <link rel="top" title="pyEntropy v0.5.0 documentation" href="index.html" />
     <link rel="prev" title="Entropy, Information and Bias Correction Primer" href="entropy.html" /> 
   </head>
   <body>
@@ -214,7 +214,7 @@ the default values in self.H</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
-<dt>method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;qe&#8217;, &#8216;nsb&#8217;}</span></dt>
+<dt>method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;qe&#8217;, &#8216;nsb&#8217;, &#8216;nsb-ext&#8217;}</span></dt>
 <dd><p class="first last">Bias correction method to use</p>
 </dd>
 <dt>sampling <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;naive&#8217;, &#8216;kt&#8217;, &#8216;beta:x&#8217;}, optional</span></dt>
@@ -232,7 +232,7 @@ Krichevsky-Trofimov estimator <a class="reference internal" href="#r2">[R2]</a>,
 </td>
 </tr>
 <tr class="field"><th class="field-name">Keywords :</th><td class="field-body"><dl class="first docutils">
-<dt>qe_method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;nsb&#8217;}, optional</span></dt>
+<dt>qe_method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;nsb&#8217;, &#8216;nsb-ext&#8217;}, optional</span></dt>
 <dd><p class="first last">Method argument to be passed for QE calculation (&#8216;pt&#8217;, &#8216;nsb&#8217;). 
 Allows combination of QE with other corrections.</p>
 </dd>
@@ -584,7 +584,7 @@ given base.</p>
 
 <dl class="function">
 <dt id="pyentropy.nsb_entropy">
-<tt class="descclassname">pyentropy.</tt><tt class="descname">nsb_entropy</tt><big>(</big><em>P</em>, <em>N</em>, <em>dim</em><big>)</big><a class="headerlink" href="#pyentropy.nsb_entropy" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">pyentropy.</tt><tt class="descname">nsb_entropy</tt><big>(</big><em>P</em>, <em>N</em>, <em>dim</em>, <em>var=False</em><big>)</big><a class="headerlink" href="#pyentropy.nsb_entropy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate NSB entropy of a probability distribution using
 external nsb-entropy program.</p>
 <p>Required <cite>nsb-entropy</cite> installed on system path.</p>
@@ -601,6 +601,9 @@ external nsb-entropy program.</p>
 </dd>
 <dt>dim <span class="classifier-delimiter">:</span> <span class="classifier">int </span></dt>
 <dd><p class="first last">Full dimension of space</p>
+</dd>
+<dt>var <span class="classifier-delimiter">:</span> <span class="classifier">{False, True}, optional</span></dt>
+<dd><p class="first last">Return variance in addition to entropy</p>
 </dd>
 </dl>
 </td>
@@ -667,6 +670,13 @@ min/max of input</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyentropy.quantise_discrete">
+<tt class="descclassname">pyentropy.</tt><tt class="descname">quantise_discrete</tt><big>(</big><em>input</em>, <em>m</em><big>)</big><a class="headerlink" href="#pyentropy.quantise_discrete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-bin an already discretised sequence (eg of integer counts)</p>
+<p>Input should already be non-negative integers</p>
 </dd></dl>
 
 </div>
