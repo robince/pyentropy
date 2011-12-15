@@ -108,8 +108,8 @@
 measure of uncertainty.  This is a function of a discrete probability
 distribution and is defined as the expected value of the surprise.  The
 surprise of a particular observation is equal to log of the reciprocal of the
-probability of the observation &#8212; for an observation <span class="math">x</span> the surprise is
-<span class="math">-\log p(x)</span>.  An event with a large probability will have a small
+probability of the observation &#8212; for an observation <img class="math" src="_images/math/26eeb5258ca5099acf8fe96b2a1049c48c89a5e6.png" alt="x"/> the surprise is
+<img class="math" src="_images/math/749be2675b63f7336a6b55d21afb149dd1b11f04.png" alt="-\log p(x)"/>.  An event with a large probability will have a small
 surprise (since it is relatively likely to occur); an event with a small
 probability will have a high surprise (since it is less likely to occur).  The
 entropy is then the average of this value over all possible observations,
@@ -217,31 +217,31 @@ to make this easier.</p>
 <cite>calc</cite> argument to <a class="reference internal" href="api.html#pyentropy.systems.BaseSystem.calculate_entropies" title="pyentropy.systems.BaseSystem.calculate_entropies"><tt class="xref py py-func docutils literal"><span class="pre">pyentropy.systems.BaseSystem.calculate_entropies()</span></tt></a>:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">HX</span></tt></dt>
-<dd><span class="math">H(\mathbf{X})</span> &#8211; unconditional entropy of X.</dd>
+<dd><img class="math" src="_images/math/50f924b9548e41c8f9471078fadd897e6a839dfd.png" alt="H(\mathbf{X})"/> &#8211; unconditional entropy of X.</dd>
 <dt><tt class="docutils literal"><span class="pre">HY</span></tt></dt>
-<dd><span class="math">H(Y)</span> &#8211; unconditional entropy of Y.</dd>
+<dd><img class="math" src="_images/math/24fe802a4d6be6f2e8adcf42cf6dd91308507052.png" alt="H(Y)"/> &#8211; unconditional entropy of Y.</dd>
 <dt><tt class="docutils literal"><span class="pre">HshX</span></tt></dt>
-<dd><span class="math">H_{sh}(\mathbf{X})</span> &#8211; shuffle-decorrelated independent unconditional    entropy of X. (X components are shuffled).</dd>
+<dd><img class="math" src="_images/math/c7393bb265a3971288ba7a528e38c0ae7c4eaad5.png" alt="H_{sh}(\mathbf{X})"/> &#8211; shuffle-decorrelated independent unconditional    entropy of X. (X components are shuffled).</dd>
 <dt><tt class="docutils literal"><span class="pre">SiHXi</span></tt></dt>
-<dd><span class="math">\sum_{i=1}^{Xm} H(X_{i})</span> &#8211; direct-decorrelated independent
+<dd><img class="math" src="_images/math/972d32efeba207f527ca8eb1dfcdaf507748ad35.png" alt="\sum_{i=1}^{Xm} H(X_{i})"/> &#8211; direct-decorrelated independent
 unconditional entropy X. Summing the individual entropies corresponds
 to constructing the analytic independent joint distribution (product
 of individual distributions).</dd>
 <dt><tt class="docutils literal"><span class="pre">HXY</span></tt></dt>
-<dd><span class="math">H(\mathbf{X}|Y)</span> &#8211; entropy of X conditional on Y.</dd>
+<dd><img class="math" src="_images/math/27726c4d09a186a75c42059f5d5a1bef2c60f2c8.png" alt="H(\mathbf{X}|Y)"/> &#8211; entropy of X conditional on Y.</dd>
 <dt><tt class="docutils literal"><span class="pre">HiXY</span></tt></dt>
-<dd><span class="math">H_{ind}(\mathbf{X}|Y) = \sum_{i=1}^{Xm} H(X_{i}|Y)</span> &#8211;
+<dd><img class="math" src="_images/math/af056adb9f2224b3a4b0944c144ceb03e53301d0.png" alt="H_{ind}(\mathbf{X}|Y) = \sum_{i=1}^{Xm} H(X_{i}|Y)"/> &#8211;
 direct-decorrelated independent conditional entropy.</dd>
 <dt><tt class="docutils literal"><span class="pre">HshXY</span></tt></dt>
-<dd><span class="math">H_{sh}(\mathbf{X}|Y)</span> &#8211; shuffle-decorrelated independent
+<dd><img class="math" src="_images/math/a84c565e3304c0c5b790be633749167a9c3bc7df.png" alt="H_{sh}(\mathbf{X}|Y)"/> &#8211; shuffle-decorrelated independent
 conditional entropy. X components are shuffled for each response Y (but not
 between responses).</dd>
 <dt><tt class="docutils literal"><span class="pre">HiX</span></tt></dt>
-<dd><span class="math">H_{ind}(\mathbf{X})</span> &#8211; unconditional direct-conditionally-decorrelated entropy of X. Entropy of <span class="math">P_{ind}(X) = \sum_{y \in Y}
-P(y) \prod_{i=1}^{Xm} P(X_{i}|y)</span></dd>
+<dd><img class="math" src="_images/math/edc4ea76b65315c6640b57048ad410dfec50396c.png" alt="H_{ind}(\mathbf{X})"/> &#8211; unconditional direct-conditionally-decorrelated entropy of X. Entropy of <img class="math" src="_images/math/776a63867a995a0cac4232a8de5f48ccd9955f90.png" alt="P_{ind}(X) = \sum_{y \in Y}
+P(y) \prod_{i=1}^{Xm} P(X_{i}|y)"/></dd>
 <dt><tt class="docutils literal"><span class="pre">ChiXY</span></tt></dt>
-<dd><span class="math">\chi (\mathbf{X})</span> &#8211; cross entropy between <span class="math">P_{ind}(X)</span> and
-<span class="math">P(X)</span></dd>
+<dd><img class="math" src="_images/math/b4b02bc50caf79eff760b7caf01f7a4d3c79194a.png" alt="\chi (\mathbf{X})"/> &#8211; cross entropy between <img class="math" src="_images/math/59f0a208bf0ecf13d4236e1f70e7be4f26fafc32.png" alt="P_{ind}(X)"/> and
+<img class="math" src="_images/math/7eb3955b3897cf58a1709a54fc2496e0773f132f.png" alt="P(X)"/></dd>
 </dl>
 <table class="docutils citation" frame="void" id="pt96" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
