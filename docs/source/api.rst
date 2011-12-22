@@ -60,4 +60,13 @@ Utility Functions
 
 .. autofunction:: pyentropy.maxent.get_data_dir
 
+:mod:`pyentropy.statk` -- Python wrapper of `STA Toolkit`_ functions
+====================================================================
 
+.. automodule:: pyentropy.statk
+
+.. autofunction:: pyentropy.statk.nsb_entropy
+
+.. autofunction:: pyentropy.statk.bub_entropy
+
+.. _STA Toolkit: http://neuroanalysis.org/neuroanalysis/goto.do?page=.repository.toolkit_home

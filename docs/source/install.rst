@@ -8,9 +8,9 @@ Installation and Requirements
 pyEntropy requires a recent version of `Python <http://www.python.org>`_ and
 `NumPy <http://www.scipy.org/>`_. Any Python >2.5 (but < 3.0) and NumPy > 1.3
 should be fine, but the most recent releases are recommend. If you have any
-problems please email (or open an issue). From version 0.5.0, a C++ NSB
-implementation (from the `Spike Train Analysis Toolkit
-<http://neuroanalysis.org/toolkit/index.html>`_) is included which requires a
+problems please email (or open an issue). From version 0.5.0, C/C++
+implementations of the NSB and BUB methods (from the `Spike Train Analysis Toolkit
+<http://neuroanalysis.org/toolkit/index.html>`_) are included. These require a
 compiler, and also the `Gnu Scientific Library (GSL)
 <http://www.gnu.org/software/gsl/>`_. On Linux, you should be able to install
 these through your package manager. E.g. for Ubuntu::
@@ -32,7 +32,7 @@ the best way, and will hopefully provide binaries.
     pyEntropy installable and usable as a pure Python package with minimal
     dependencies. If the build fails for any reason, warnings will be
     displayed, but the pyEntropy package should still be installable. The
-    ``nsb`` entropy method will be unavailable but if you have the
+    ``nsb`` and ``bub`` entropy methods will be unavailable but if you have the
     ``nsb-entropy`` program from http://nsb-entropy.sourceforge.net/ on your
     path you should still be able to use the ``nsb-ext`` method.
 
