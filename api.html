@@ -67,6 +67,7 @@
 <li><a class="reference internal" href="#module-pyentropy.maxent"><tt class="docutils literal"><span class="pre">pyentropy.maxent</span></tt> &#8211; Finite Alphabet Maximum-Entropy Solutions</a><ul>
 </ul>
 </li>
+<li><a class="reference internal" href="#module-pyentropy.statk"><tt class="docutils literal"><span class="pre">pyentropy.statk</span></tt> &#8211; Python wrapper of STA Toolkit functions</a></li>
 </ul>
 </li>
 </ul>
@@ -214,7 +215,7 @@ the default values in self.H</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
-<dt>method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;qe&#8217;, &#8216;nsb&#8217;, &#8216;nsb-ext&#8217;}</span></dt>
+<dt>method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;qe&#8217;, &#8216;nsb&#8217;, &#8216;nsb-ext&#8217;, &#8216;bub&#8217;}</span></dt>
 <dd><p class="first last">Bias correction method to use</p>
 </dd>
 <dt>sampling <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;naive&#8217;, &#8216;kt&#8217;, &#8216;beta:x&#8217;}, optional</span></dt>
@@ -232,7 +233,7 @@ Krichevsky-Trofimov estimator <a class="reference internal" href="#r2">[R2]</a>,
 </td>
 </tr>
 <tr class="field"><th class="field-name">Keywords :</th><td class="field-body"><dl class="first docutils">
-<dt>qe_method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;nsb&#8217;, &#8216;nsb-ext&#8217;}, optional</span></dt>
+<dt>qe_method <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;plugin&#8217;, &#8216;pt&#8217;, &#8216;nsb&#8217;, &#8216;nsb-ext&#8217;, &#8216;bub&#8217;}, optional</span></dt>
 <dd><p class="first last">Method argument to be passed for QE calculation (&#8216;pt&#8217;, &#8216;nsb&#8217;). 
 Allows combination of QE with other corrections.</p>
 </dd>
@@ -857,6 +858,126 @@ config.</p>
 <dt id="pyentropy.maxent.get_data_dir">
 <tt class="descclassname">pyentropy.maxent.</tt><tt class="descname">get_data_dir</tt><big>(</big><big>)</big><a class="headerlink" href="#pyentropy.maxent.get_data_dir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the data cache dir to use to load and save precomputed matrices</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pyentropy.statk">
+<span id="pyentropy-statk-python-wrapper-of-sta-toolkit-functions"></span><h2><a class="reference internal" href="#module-pyentropy.statk" title="pyentropy.statk"><tt class="xref py py-mod docutils literal"><span class="pre">pyentropy.statk</span></tt></a> &#8211; Python wrapper of <a class="reference external" href="http://neuroanalysis.org/neuroanalysis/goto.do?page=.repository.toolkit_home">STA Toolkit</a> functions<a class="headerlink" href="#module-pyentropy.statk" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pyentropy.statk.nsb_entropy">
+<tt class="descclassname">pyentropy.statk.</tt><tt class="descname">nsb_entropy</tt><big>(</big><big>)</big><a class="headerlink" href="#pyentropy.statk.nsb_entropy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate entropy using C NSB implementation from <a class="reference external" href="http://neuroanalysis.org/toolkit/index.html">Spike Train Analysis
+Toolkit</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
+<dt>P <span class="classifier-delimiter">:</span> <span class="classifier">(dim,) float array</span></dt>
+<dd><p class="first last">Probability vector</p>
+</dd>
+<dt>N <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of trials.</p>
+</dd>
+<dt>dim <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Dimension of space</p>
+</dd>
+<dt>verbose <span class="classifier-delimiter">:</span> <span class="classifier">{False, True}, optional</span></dt>
+<dd><p class="first last">Print warnings from NSB routine.</p>
+</dd>
+<dt>var <span class="classifier-delimiter">:</span> <span class="classifier">{False, True}, optional</span></dt>
+<dd><p class="first last">Return variance in addition to entropy</p>
+</dd>
+<dt>possible_words <span class="classifier-delimiter">:</span> <span class="classifier">string, optional or int</span></dt>
+<dd><p class="first">Strategy for choosing total number of possible words
+One of [&#8216;recommended&#8217;, &#8216;unique&#8217;, &#8216;total&#8217;, &#8216;possible&#8217;,</p>
+<blockquote>
+<div><p>&#8216;min_tot_pos&#8217;, &#8216;min_lim_tot_pos&#8217;]</p>
+</div></blockquote>
+<p class="last">(default: &#8216;recommended&#8217;).
+Or an positive integer value, see <cite>here 
+&lt;http://neuroanalysis.org/neuroanalysis/goto.do?page=.repository.toolkit_entropts&gt;</cite></p>
+</dd>
+<dt>nsb_precision <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Relative precision for numerical integration (default 1e-6)</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><dl class="first last docutils">
+<dt>H <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Entropy.</p>
+</dd>
+<dt>V <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Variance (if requested)</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pyentropy.statk.bub_entropy">
+<tt class="descclassname">pyentropy.statk.</tt><tt class="descname">bub_entropy</tt><big>(</big><big>)</big><a class="headerlink" href="#pyentropy.statk.bub_entropy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate entropy using BUB implementation from <a class="reference external" href="http://neuroanalysis.org/toolkit/index.html">Spike Train Analysis
+Toolkit</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters :</th><td class="field-body"><dl class="first docutils">
+<dt>P <span class="classifier-delimiter">:</span> <span class="classifier">(dim,) float array</span></dt>
+<dd><p class="first last">Probability vector</p>
+</dd>
+<dt>N <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Number of trials.</p>
+</dd>
+<dt>dim <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Dimension of space</p>
+</dd>
+<dt>verbose <span class="classifier-delimiter">:</span> <span class="classifier">{False, True}, optional</span></dt>
+<dd><p class="first last">Print warnings from NSB routine.</p>
+</dd>
+<dt>var <span class="classifier-delimiter">:</span> <span class="classifier">{False, True}, optional</span></dt>
+<dd><p class="first last">Return variance in addition to entropy</p>
+</dd>
+<dt>possible_words <span class="classifier-delimiter">:</span> <span class="classifier">string, optional or int</span></dt>
+<dd><p class="first">Strategy for choosing total number of possible words 
+One of [&#8216;recommended&#8217;, &#8216;unique&#8217;, &#8216;total&#8217;, &#8216;possible&#8217;,</p>
+<blockquote>
+<div><p>&#8216;min_tot_pos&#8217;, &#8216;min_lim_tot_pos&#8217;]</p>
+</div></blockquote>
+<p class="last">(default: &#8216;recommended&#8217;).
+Or an positive integer value, see <cite>here 
+&lt;http://neuroanalysis.org/neuroanalysis/goto.do?page=.repository.toolkit_entropts&gt;</cite></p>
+</dd>
+<dt>bub_lambda_0 <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Lagrange multiplier parameter λ_0 for BUB (default 0)</p>
+</dd>
+<dt>bub_K <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">K parameter for BUB (default 11)</p>
+</dd>
+<dt>bub_compat <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">0 - compatible with paper (default)
+1 - compatible with posted code</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns :</th><td class="field-body"><dl class="first last docutils">
+<dt>H <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd><p class="first last">Entropy.</p>
+</dd>
+<dt>V <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Variance (if requested)</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

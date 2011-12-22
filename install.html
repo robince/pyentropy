@@ -84,8 +84,8 @@
 <p>pyEntropy requires a recent version of <a class="reference external" href="http://www.python.org">Python</a> and
 <a class="reference external" href="http://www.scipy.org/">NumPy</a>. Any Python &gt;2.5 (but &lt; 3.0) and NumPy &gt; 1.3
 should be fine, but the most recent releases are recommend. If you have any
-problems please email (or open an issue). From version 0.5.0, a C++ NSB
-implementation (from the <a class="reference external" href="http://neuroanalysis.org/toolkit/index.html">Spike Train Analysis Toolkit</a>) is included which requires a
+problems please email (or open an issue). From version 0.5.0, C/C++
+implementations of the NSB and BUB methods (from the <a class="reference external" href="http://neuroanalysis.org/toolkit/index.html">Spike Train Analysis Toolkit</a>) are included. These require a
 compiler, and also the <a class="reference external" href="http://www.gnu.org/software/gsl/">Gnu Scientific Library (GSL)</a>. On Linux, you should be able to install
 these through your package manager. E.g. for Ubuntu:</p>
 <div class="highlight-python"><pre>sudo aptitude install build-essential python-dev libgsl0-dev</pre>
@@ -103,7 +103,7 @@ the best way, and will hopefully provide binaries.</p>
 pyEntropy installable and usable as a pure Python package with minimal
 dependencies. If the build fails for any reason, warnings will be
 displayed, but the pyEntropy package should still be installable. The
-<tt class="docutils literal"><span class="pre">nsb</span></tt> entropy method will be unavailable but if you have the
+<tt class="docutils literal"><span class="pre">nsb</span></tt> and <tt class="docutils literal"><span class="pre">bub</span></tt> entropy methods will be unavailable but if you have the
 <tt class="docutils literal"><span class="pre">nsb-entropy</span></tt> program from <a class="reference external" href="http://nsb-entropy.sourceforge.net/">http://nsb-entropy.sourceforge.net/</a> on your
 path you should still be able to use the <tt class="docutils literal"><span class="pre">nsb-ext</span></tt> method.</p>
 </div>
