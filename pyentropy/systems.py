@@ -31,14 +31,17 @@ class BaseSystem:
         plugin = (method == 'plugin') or ('plugin' in methods)
         nsb = (method == 'nsb') or ('nsb' in methods)
         nsbext = (method == 'nsb-ext') or ('nsb-ext' in methods)
+        bub = (method == 'bub') or ('bub' in methods)
         calc = self.calc
 
         if (pt or plugin): 
             self._calc_pt_plugin(pt)
         if nsb:
-            self._calc_nsb(ext=False)
+            self._calc_external(method='nsb')
         if nsbext:
-            self._calc_nsb(ext=True)
+            self._calc_external(method='nsbext')
+        if bub:
+            self._calc_external(method='bub')
         if 'HshXY' in calc:
             #TODO: not so efficient since samples PY again
             sh = self._sh_instance()
@@ -51,6 +54,8 @@ class BaseSystem:
                 self.H_nsb['HshXY'] = sh.H_nsb['HXY']
             if nsbext: 
                 self.H_nsbext['HshXY'] = sh.H_nsbext['HXY']
+            if bub: 
+                self.H_bub['HshXY'] = sh.H_bub['HXY']
             if plugin or pt: 
                 self.H_plugin['HshXY'] = sh.H_plugin['HXY']
         if 'HshX' in calc:
@@ -64,6 +69,8 @@ class BaseSystem:
                 self.H_nsb['HshX'] = sh.H_nsb['HX']
             if nsbext: 
                 self.H_nsbext['HshX'] = sh.H_nsbext['HX']
+            if bub: 
+                self.H_bub['HshX'] = sh.H_bub['HX']
             if plugin or pt: 
                 self.H_plugin['HshX'] = sh.H_plugin['HX']
             
@@ -75,6 +82,8 @@ class BaseSystem:
             self.H = self.H_nsb
         elif method == 'nsb-ext':
             self.H = self.H_nsbext
+        elif method == 'bub':
+            self.H = self.H_bub
 
     def _calc_pt_plugin(self, pt):
         """Calculate direct entropies and apply PT correction if required """
@@ -148,65 +157,61 @@ class BaseSystem:
                 # no PT for ChiXY1
                 self.H_pt['ChiXY1'] = H
     
-    def _calc_nsb(self, ext=False):
-        """Calculate NSB corrected entropy
-        
-        :Parameters:
-          ext : {False, True}, optional
-            Use external 'nsb-entropy' program vs STAT version
+    def _calc_external(self, method):
+        """Calculate NSB or BUB corrected entropy
 
         """
-        if ext:
-            from utils import nsb_entropy
-        else:
+        if method == 'nsb-ext':
+            from utils import nsb_entropy as entropy_fun
+        elif method == 'nsb':
             # don't catch exceptions - just fail if can't import
-            from statk.wrap import nsb_entropy as _nsb_entropy
-            # for debugging
-            #nsb_entropy = lambda x,y,z: _nsb_entropy(x,y,z,verbose=True)
-            nsb_entropy = _nsb_entropy
+            from statk.wrap import nsb_entropy as entropy_fun
+        elif method == 'bub':
+            from statk.wrap import bub_entropy as entropy_fun
+        else:
+            raise ValueError, "Unknown external entropy method %s in _calc_external"%method
+            
         calc = self.calc
-        H_nsb = {}
+        Hres = {}
         if 'HX' in calc:
-            H = nsb_entropy(self.PX, self.N, self.X_dim) 
-            H_nsb['HX'] = H
+            H = entropy_fun(self.PX, self.N, self.X_dim) 
+            Hres['HX'] = H
         if 'HY' in calc:
-            H = nsb_entropy(self.PY, self.N, self.Y_dim)
-            H_nsb['HY'] = H
+            H = entropy_fun(self.PY, self.N, self.Y_dim)
+            Hres['HY'] = H
         if 'HXY' in calc:
             H = 0.0
             for y in xrange(self.Y_dim):
-                H += self.PY[y] * nsb_entropy(self.PXY[:,y], self.Ny[y], self.X_dim) 
-            H_nsb['HXY'] = H
+                H += self.PY[y] * entropy_fun(self.PXY[:,y], self.Ny[y], self.X_dim) 
+            Hres['HXY'] = H
         if 'SiHXi' in calc:
             H = 0.0
             for i in xrange(self.X_n):
-                H += nsb_entropy(self.PXi[:,i], self.N, self.X_m) 
-            H_nsb['SiHXi'] = H
+                H += entropy_fun(self.PXi[:,i], self.N, self.X_m) 
+            Hres['SiHXi'] = H
         if 'HiXY' in calc:
             H = 0.0
             for i in xrange(self.X_n):
                 for y in xrange(self.Y_dim):
-                    H += self.PY[y] * nsb_entropy(self.PXiY[:,i,y], self.Ny[y], self.X_m) 
-            H_nsb['HiXY'] = H
+                    H += self.PY[y] * entropy_fun(self.PXiY[:,i,y], self.Ny[y], self.X_m) 
+            Hres['HiXY'] = H
         if 'HiX' in calc:
-            H = nsb_entropy(self.PiX, self.N, self.X_dim)
-            H_nsb['HiX'] = H
+            H = entropy_fun(self.PiX, self.N, self.X_dim)
+            Hres['HiX'] = H
         if 'ChiX' in calc:
-            print "Warning: No NSB correction applied for ChiX"
+            print "Warning: No NSB or BUB correction applied for ChiX"
             H = -(self.PX*malog2(np.ma.array(self.PiX,copy=False,
                     mask=(self.PiX<=np.finfo(np.float).eps)))).sum(axis=0)
-            H_nsb['ChiX'] = H
-        if ext:
-            self.H_nsbext = H_nsb
-        else:
-            self.H_nsb = H_nsb
+            Hres['ChiX'] = H
+        # save result
+        self.__dict__['H_%s'%method] = Hres
 
     def calculate_entropies(self, method='plugin', sampling='naive', 
                             calc=['HX','HXY'], **kwargs):
         """Calculate entropies of the system.
 
         :Parameters:
-          method : {'plugin', 'pt', 'qe', 'nsb', 'nsb-ext'}
+          method : {'plugin', 'pt', 'qe', 'nsb', 'nsb-ext', 'bub'}
             Bias correction method to use
           sampling : {'naive', 'kt', 'beta:x'}, optional
             Sampling method to use. 'naive' is the standard histrogram method.
@@ -220,7 +225,7 @@ class BaseSystem:
             'SiHXi', 'HiX', 'HshX', 'HiXY', 'HshXY', 'ChiX', 'HXY1','ChiXY1')
 
         :Keywords:
-          qe_method : {'plugin', 'pt', 'nsb', 'nsb-ext'}, optional
+          qe_method : {'plugin', 'pt', 'nsb', 'nsb-ext', 'bub'}, optional
             Method argument to be passed for QE calculation ('pt', 'nsb'). 
             Allows combination of QE with other corrections.
           methods : list of strs, optional
@@ -252,7 +257,7 @@ class BaseSystem:
         self.calc = calc
         self.methods = kwargs.get('methods',[])
         for m in (self.methods + [method]):
-            if m not in ('plugin','pt','qe','nsb','nsb-ext'):
+            if m not in ('plugin','pt','qe','nsb','nsb-ext','bub'):
                 raise ValueError, 'Unknown correction method : '+str(m)
         methods = self.methods
 

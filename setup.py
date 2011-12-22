@@ -42,7 +42,7 @@ except DistutilsExecError:
 
 exts = []
 wrap_sources = ['hist_c.c', 'sort_c.c', 'gen_c.c', 'entropy_c.c',
-                      'entropy_nsb_c.cpp', 'wrap.c']
+                      'entropy_nsb_c.cpp', 'entropy_bub_c.c', 'wrap.c']
 statk_wrap_sources = [os.path.join('pyentropy','statk',x) for x in wrap_sources]
 try: 
     statk_wrap = gsl_Extension("statk.wrap",

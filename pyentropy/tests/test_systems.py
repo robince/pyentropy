@@ -34,7 +34,7 @@ def setup():
     allcalc = ['HX','HY','HXY','SiHXi','HiX','HshX','HiXY',
                'HshXY','ChiX']
 
-def nsb_available():
+def statk_available():
     try:
         import pyentropy.statk.wrap
     except ImportError:
@@ -91,7 +91,7 @@ def test_1d_plugin():
 def test_1d_pt():
     yield do_1d_check, 'pt', None
 
-@dec.skipif(not nsb_available(), "STATK NSB wrapper not available")
+@dec.skipif(not statk_available(), "STATK wrapper not available")
 @dec.slow
 def test_1d_nsb():
     yield do_1d_check, 'nsb', None
@@ -100,6 +100,10 @@ def test_1d_nsb():
 @dec.slow
 def test_1d_nsbext():
     yield do_1d_check, 'nsb-ext', None
+
+@dec.skipif(not statk_available(), "STATK wrapper not available")
+def test_1d_bub():
+    yield do_1d_check, 'bub', None
 
 def test_1d_qe():
     yield do_1d_check, 'qe', 'plugin'
@@ -152,7 +156,7 @@ def test_1d_plugin_sorted():
 def test_1d_pt_sorted():
     yield do_1d_check_sorted, 'pt', None
 
-@dec.skipif(not nsb_available(), "STATK NSB wrapper not available")
+@dec.skipif(not statk_available(), "STATK NSB wrapper not available")
 @dec.slow
 def test_1d_nsb_sorted():
     yield do_1d_check_sorted, 'nsb', None
@@ -161,6 +165,10 @@ def test_1d_nsb_sorted():
 @dec.slow
 def test_1d_nsbext_sorted():
     yield do_1d_check_sorted, 'nsb-ext', None
+
+@dec.skipif(not statk_available(), "STATK wrapper not available")
+def test_1d_bub_sorted():
+    yield do_1d_check_sorted, 'bub', None
 
 def test_1d_qe_sorted():
     yield do_1d_check_sorted, 'qe', 'plugin'
