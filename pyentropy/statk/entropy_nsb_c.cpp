@@ -1,5 +1,5 @@
 /*
- *  Copyright 2009, Weill Medical College of Cornell University
+ *  Copyright 2010, Weill Medical College of Cornell University
  *  All rights reserved.
  *
  *  This software is distributed WITHOUT ANY WARRANTY
@@ -1096,12 +1096,30 @@ namespace nsb_entropy
 			}
 			catch(std::bad_alloc)
 			{
-				errors.push_back("Failed to properly instantiate interpolation splines.");
+				errors.push_back("Failed to properly instantiate GSL interpolation splines.");
 				return;
 			}
 
 			//calculate results
-			calculate();
+			try
+			{
+				calculate();
+			}
+			catch(std::bad_alloc)
+			{
+				errors.push_back("Failed to properly instantiate GSL integration workspace.");
+				return;
+			}
+			catch(const std::range_error &ex)
+			{
+				errors.push_back(ex.what());
+				return;
+			}
+			catch(const std::runtime_error &ex)
+			{
+				errors.push_back(ex.what());
+				return;
+			}
 
 			//reset error handler
 			gsl_set_error_handler(gsl_error_handler);
