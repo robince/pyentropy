@@ -107,7 +107,7 @@ def nsb_entropy(np.ndarray[np.float_t, ndim=1] P, int N, int dim,
     """
     if P.size != dim:
         raise ValueError, "P vector must be of length dim"
-    if np.abs(P.sum()-1.0) > np.finfo(np.float).eps:
+    if np.abs(P.sum(dtype=np.float128)-np.float128(1.0)) > np.finfo(np.float64).eps:
         raise ValueError, "sum(P) must equal 1"
 
     # convert to counts
