@@ -102,6 +102,7 @@ def test_1d_nsbext():
     yield do_1d_check, 'nsb-ext', None
 
 @dec.skipif(not statk_available(), "STATK wrapper not available")
+@dec.slow
 def test_1d_bub():
     yield do_1d_check, 'bub', None
 
@@ -167,6 +168,7 @@ def test_1d_nsbext_sorted():
     yield do_1d_check_sorted, 'nsb-ext', None
 
 @dec.skipif(not statk_available(), "STATK wrapper not available")
+@dec.slow
 def test_1d_bub_sorted():
     yield do_1d_check_sorted, 'bub', None
 
