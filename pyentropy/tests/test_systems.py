@@ -56,10 +56,10 @@ def nsb_ext_available():
 def setup_1d():
     global x, y, HX, HXY, alltrue
     # simple channel which corrupts 50% randomly
-    x = np.random.random_integers(0,9,100000)
+    x = np.random.randint(0,9+1,100000)
     y = x.copy()
     indx = np.random.permutation(len(x))[:len(x)/2]
-    y[indx] = np.random.random_integers(0,9,len(x)/2)
+    y[indx] = np.random.randint(0,9+1,len(x)/2)
     # analytic results
     HX = np.log2(10)
     HXY = -9*0.05*np.log2(0.05) - 0.55*np.log2(0.55)
