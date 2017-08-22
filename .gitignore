@@ -5,3 +5,5 @@
 *.swo
 *.o
 *.so
+build/*
+docs/build/*
