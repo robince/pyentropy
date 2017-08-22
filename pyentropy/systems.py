@@ -625,7 +625,7 @@ class DiscreteSystem(BaseSystem):
 
         """
         Nred = self.N / sub[0]
-        sl = slice(sub[1]*Nred,(sub[1]+1)*Nred)
+        sl = slice(int(sub[1]*Nred),int((sub[1]+1)*Nred))
         return DiscreteSystem(self.X[:,sl], self.X_dims,
                               self.Y[:,sl], self.Y_dims)
 
@@ -741,7 +741,7 @@ class SortedDiscreteSystem(DiscreteSystem):
             sstart=0
             for i in xrange(self.Y_dim):
                 send = sstart+self.Ny[i]
-                indx = slice(sstart,send)
+                indx = slice(int(sstart),int(send))
                 sstart = send
                 if 'HXY' in calc:
                     # output conditional ensemble

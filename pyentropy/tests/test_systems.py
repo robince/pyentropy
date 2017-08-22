@@ -128,7 +128,7 @@ def setup_1d_sorted():
         oce = x[y==i]
         Ny[i] = len(oce)
         end = start + Ny[i]
-        xs[start:end] = oce
+        xs[int(start):int(end)] = oce
         start = end
     x = xs
 
