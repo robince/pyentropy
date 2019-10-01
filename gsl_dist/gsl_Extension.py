@@ -188,7 +188,7 @@ class gsl_Extension(Extension):
 
 		# prepare lib list
 		# split optionlist and strip blanks from each option
-		gsl_lib_list=map(string.strip,self.get_gsl_libs().split())
+		gsl_lib_list=map(str.strip,self.get_gsl_libs().split())
 
 		# filter options with -l
 		not_lib_opt=lambda a:a[:2]=="-l"
@@ -237,9 +237,9 @@ class gsl_Extension(Extension):
 		min_length=min(len(required_version),len(this_version))
 		for pos in range(min_length):
 			this_type=type(required_version[pos])
-			if  this_type== types.StringType:
+			if  this_type== bytes:
 				if required_version[pos]>this_version[pos]: return 0
-			elif this_type == types.IntType:
+			elif this_type == int:
 				if required_version[pos]>int(this_version[pos]): return 0
 			else:
 				raise DistutilsExecError("incorrect version specification")
