@@ -58,8 +58,8 @@ def setup_1d():
     # simple channel which corrupts 50% randomly
     x = np.random.randint(0,9+1,100000)
     y = x.copy()
-    indx = np.random.permutation(len(x))[:len(x)/2]
-    y[indx] = np.random.randint(0,9+1,len(x)/2)
+    indx = np.random.permutation(len(x))[:int(len(x)/2)]
+    y[indx] = np.random.randint(0,9+1,int(len(x)/2))
     # analytic results
     HX = np.log2(10)
     HXY = -9*0.05*np.log2(0.05) - 0.55*np.log2(0.55)
