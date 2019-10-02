@@ -17,7 +17,7 @@
 
 from __future__ import division
 import numpy as np
-from utils import (prob, _probcount, decimalise, pt_bayescount, 
+from pyentropy.utils import (prob, _probcount, decimalise, pt_bayescount, 
                    dec2base, ent, malog2)
 
 class BaseSystem:
@@ -106,22 +106,22 @@ class BaseSystem:
             H = (self.PY * ent(self.PXY)).sum()
             self.H_plugin['HXY'] = H
             if pt:
-                for y in xrange(self.Y_dim):
+                for y in range(self.Y_dim):
                     H += pt_corr(pt_bayescount(self.PXY[:,y], self.Ny[y]))
                 self.H_pt['HXY'] = H
         if 'SiHXi' in calc:
             H = ent(self.PXi).sum()
             self.H_plugin['SiHXi'] = H
             if pt:
-                for x in xrange(self.X_n):
+                for x in range(self.X_n):
                     H += pt_corr(pt_bayescount(self.PXi[:,x],self.N))
                 self.H_pt['SiHXi'] = H
         if 'HiXY' in calc:
             H = (self.PY * ent(self.PXiY)).sum()
             self.H_plugin['HiXY'] = H
             if pt:
-                for x in xrange(self.X_n):
-                    for y in xrange(self.Y_dim):
+                for x in range(self.X_n):
+                    for y in range(self.Y_dim):
                         H += pt_corr(pt_bayescount(self.PXiY[:,x,y],self.Ny[y]))
                 self.H_pt['HiXY'] = H
         if 'HiX' in calc:
@@ -140,16 +140,16 @@ class BaseSystem:
         # for adelman style I(k;spike) (bits/spike)
         if 'HXY1' in calc:
             if self.Y_m != 2:
-                raise ValueError, \
-                "HXY1 calculation only makes sense for spike data, ie Y_m = 2"
+                raise ValueError(\
+                "HXY1 calculation only makes sense for spike data, ie Y_m = 2")
             H = ent(self.PXY[:,1])
             self.H_plugin['HXY1'] = H
             if pt:
                 self.H_pt['HXY1'] = H + pt_corr(pt_bayescount(self.PXY[:,1],self.Ny[1])) 
         if 'ChiXY1' in calc:
             if self.Y_m != 2:
-                raise ValueError, \
-                "ChiXY1 calculation only makes sense for spike data, ie Y_m = 2"
+                raise ValueError( \
+                "ChiXY1 calculation only makes sense for spike data, ie Y_m = 2")
             H = -np.ma.array(self.PXY[:,1]*np.log2(self.PX),copy=False,
                     mask=(self.PX<=np.finfo(np.float).eps)).sum()
             self.H_plugin['ChiXY1'] = H
@@ -162,14 +162,14 @@ class BaseSystem:
 
         """
         if method == 'nsb-ext':
-            from utils import nsb_entropy as entropy_fun
+            from pyentropy.utils import nsb_entropy as entropy_fun
         elif method == 'nsb':
             # don't catch exceptions - just fail if can't import
-            from statk.wrap import nsb_entropy as entropy_fun
+            from pyentropy.statk.wrap import nsb_entropy as entropy_fun
         elif method == 'bub':
-            from statk.wrap import bub_entropy as entropy_fun
+            from pyentropy.statk.wrap import bub_entropy as entropy_fun
         else:
-            raise ValueError, "Unknown external entropy method %s in _calc_external"%method
+            raise ValueError("Unknown external entropy method %s in _calc_external"%method)
             
         calc = self.calc
         Hres = {}
@@ -181,25 +181,25 @@ class BaseSystem:
             Hres['HY'] = H
         if 'HXY' in calc:
             H = 0.0
-            for y in xrange(self.Y_dim):
+            for y in range(self.Y_dim):
                 H += self.PY[y] * entropy_fun(self.PXY[:,y], self.Ny[y], self.X_dim) 
             Hres['HXY'] = H
         if 'SiHXi' in calc:
             H = 0.0
-            for i in xrange(self.X_n):
+            for i in range(self.X_n):
                 H += entropy_fun(self.PXi[:,i], self.N, self.X_m) 
             Hres['SiHXi'] = H
         if 'HiXY' in calc:
             H = 0.0
-            for i in xrange(self.X_n):
-                for y in xrange(self.Y_dim):
+            for i in range(self.X_n):
+                for y in range(self.Y_dim):
                     H += self.PY[y] * entropy_fun(self.PXiY[:,i,y], self.Ny[y], self.X_m) 
             Hres['HiXY'] = H
         if 'HiX' in calc:
             H = entropy_fun(self.PiX, self.N, self.X_dim)
             Hres['HiX'] = H
         if 'ChiX' in calc:
-            print "Warning: No NSB or BUB correction applied for ChiX"
+            print( "Warning: No NSB or BUB correction applied for ChiX")
             H = -(self.PX*malog2(np.ma.array(self.PiX,copy=False,
                     mask=(self.PiX<=np.finfo(np.float).eps)))).sum(axis=0)
             Hres['ChiX'] = H
@@ -258,7 +258,7 @@ class BaseSystem:
         self.methods = kwargs.get('methods',[])
         for m in (self.methods + [method]):
             if m not in ('plugin','pt','qe','nsb','nsb-ext','bub'):
-                raise ValueError, 'Unknown correction method : '+str(m)
+                raise ValueError('Unknown correction method : '+str(m))
         methods = self.methods
 
         # allocate memory for requested calculations
@@ -282,7 +282,7 @@ class BaseSystem:
             # default to plugin method if not specified
             qe_method = kwargs.get('qe_method','plugin')
             if qe_method == 'qe':
-                raise ValueError, "Can't use qe for qe_method!"
+                raise ValueError("Can't use qe for qe_method!")
             self._qe_ent(qe_method,sampling,methods)
             if method == 'qe':
                 self.H = self.H_qe
@@ -307,8 +307,8 @@ class BaseSystem:
                 H = self.H
             I = H['HX'] - H['HXY']
         except (KeyError, AttributeError):
-            print "Error: must have computed HX and HXY for " + \
-            "mutual information"
+            print("Error: must have computed HX and HXY for " + \
+            "mutual information")
             return
         return I
 
@@ -332,8 +332,8 @@ class BaseSystem:
                 H = self.H
             I = H['HX'] - H['HiXY'] + H['HshXY'] - H['HXY']
         except (KeyError, AttributeError):
-            print "Error: must have computed HX, HiXY, HshXY and HXY " + \
-                    "for shuffled mutual information estimator"
+            print("Error: must have computed HX, HiXY, HshXY and HXY " + \
+                    "for shuffled mutual information estimator")
             return
         return I
 
@@ -358,8 +358,8 @@ class BaseSystem:
             I = (H['HX'] - H['HshX'] + H['SiHXi'] -
                     H['HiXY'] + H['HshXY'] - H['HXY'])
         except (KeyError, AttributeError):
-            print "Error: must have computed HX, HshX, SiHXi, " + \
-                "HiXY, HshXY and HXY for shuffled mutual information estimator"
+            print("Error: must have computed HX, HshX, SiHXi, " + \
+                "HiXY, HshXY and HXY for shuffled mutual information estimator")
             return
         return I
 
@@ -372,7 +372,7 @@ class BaseSystem:
             I['cor-ind'] = -self.H['HiX'] + self.H['ChiX']
             I['cor-dep'] = self.Ish() - self.H['ChiX'] + self.H['HiXY']
         except (KeyError, AttributeError):
-            print "Error: must compute SiHXi, HiXY, HiX, ChiX and Ish for Pola breakdown"
+            print("Error: must compute SiHXi, HiXY, HiX, ChiX and Ish for Pola breakdown")
         return I
 
     def Ispike(self):
@@ -380,7 +380,7 @@ class BaseSystem:
         try:
             I = self.H['ChiXY1'] - self.H['HXY1']
         except (KeyError, AttributeError):
-            print "Error: must compute ChiXY1, HXY1 for Ispike"
+            print("Error: must compute ChiXY1, HXY1 for Ispike")
             return
         return I
 
@@ -395,7 +395,7 @@ class BaseSystem:
         # full length
         # add on methods to do everything (other than qe) with this one call
         self._calc_ents(qe_method,sampling,methods)
-        H1 = np.array([v for k,v in sorted(self.H.iteritems())])
+        H1 = np.array([v for k,v in sorted(self.H.items())])
         
         # half length
         H2 = np.zeros(H1.shape)
@@ -403,7 +403,7 @@ class BaseSystem:
         for sl in half_slices:
             sys = self._subsampled_instance(sl)
             sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
-            H2 += np.array([v for k,v in sorted(sys.H.iteritems())])
+            H2 += np.array([v for k,v in sorted(sys.H.items())])
             del sys
         H2 = H2 / 2.0
         
@@ -413,16 +413,16 @@ class BaseSystem:
         for sl in quarter_slices:
             sys = self._subsampled_instance(sl)
             sys.calculate_entropies(method=qe_method, sampling=sampling, calc=calc)
-            H4 += np.array([v for k,v in sorted(sys.H.iteritems())])
+            H4 += np.array([v for k,v in sorted(sys.H.items())])
             del sys
         H4 = H4 / 4.0
 
         # interpolation
         Hqe = np.zeros(H1.size)
-        for i in xrange(H1.size):
+        for i in range(H1.size):
             Hqe[i] = np.polyfit([N4,N2,N],
                         [N4*N4*H4[i], N2*N2*H2[i], N*N*H1[i]], 2)[0]
-        keys = [k for k,v in sorted(self.H_plugin.iteritems())]
+        keys = [k for k,v in sorted(self.H_plugin.items())]
         self.H_qe = dict(zip(keys, Hqe))
 
 
@@ -529,29 +529,29 @@ class DiscreteSystem(BaseSystem):
         if any([c in calc for c in ['HXY','HiX','HiXY','HY']]):
             self.PY = prob(d_Y, self.Y_dim, method=method)
         if 'SiHXi' in calc:
-            for i in xrange(self.X_n):
+            for i in range(self.X_n):
                 self.PXi[:,i] = prob(self.X[i,:], self.X_m, method=method)
             
         # conditional probabilities
         if any([c in calc for c in ['HiXY','HXY','HshXY']]):
-            for i in xrange(self.Y_dim):
+            for i in range(self.Y_dim):
                 indx = np.where(d_Y==i)[0]
                 self.Ny[i] = indx.size
                 if 'HXY' in calc:
                     # output conditional ensemble
                     oce = d_X[indx]
                     if oce.size == 0:
-                        print 'Warning: Null output conditional ensemble for ' + \
-                          'output : ' + str(i)
+                        print('Warning: Null output conditional ensemble for ' + \
+                          'output : ' + str(i))
                     else:
                         self.PXY[:,i] = prob(oce, self.X_dim, method=method)
                 if any([c in calc for c in ['HiX','HiXY','HshXY']]):
-                    for j in xrange(self.X_n):
+                    for j in range(self.X_n):
                         # output conditional ensemble for a single variable
                         oce = self.X[j,indx]
                         if oce.size == 0:
-                            print 'Warning: Null independent output conditional ensemble for ' + \
-                                'output : ' + str(i) + ', variable : ' + str(j)
+                            print('Warning: Null independent output conditional ensemble for ' + \
+                                'output : ' + str(i) + ', variable : ' + str(j))
                         else:
                             self.PXiY[:,j,i] = prob(oce, self.X_m, method=method)
                             if 'HshXY' in calc:
@@ -573,17 +573,17 @@ class DiscreteSystem(BaseSystem):
     def _check_inputs(self, X, Y):
         if (not np.issubdtype(X.dtype, np.int)) \
         or (not np.issubdtype(Y.dtype, np.int)):
-            raise ValueError, "Inputs must be of integer type"
+            raise ValueError("Inputs must be of integer type")
         if (X.max() >= self.X_m) or (X.min() < 0):
-            raise ValueError, "X values must be in [0, X_m)"
+            raise ValueError("X values must be in [0, X_m)")
         if (Y.max() >= self.Y_m) or (Y.min() < 0):
-            raise ValueError, "Y values must be in [0, Y_m)"        
+            raise ValueError("Y values must be in [0, Y_m)")       
         if (X.shape[0] != self.X_n):
-            raise ValueError, "X.shape[0] must equal X_n"
+            raise ValueError("X.shape[0] must equal X_n")
         if (Y.shape[0] != self.Y_n):
-            raise ValueError, "Y.shape[0] must equal Y_n"
+            raise ValueError("Y.shape[0] must equal Y_n")
         if (Y.shape[1] != X.shape[1]):
-            raise ValueError, "X and Y must contain same number of trials"
+            raise ValueError("X and Y must contain same number of trials")
 
     def _sh_instance(self):
         """Return shuffled instance"""
@@ -685,15 +685,15 @@ class SortedDiscreteSystem(DiscreteSystem):
 
     def _check_inputs(self):
         if (not np.issubdtype(self.X.dtype, np.int)):
-            raise ValueError, "Inputs must be of integer type"
+            raise ValueError( "Inputs must be of integer type")
         if (self.X.max() >= self.X_m) or (self.X.min() < 0):
-            raise ValueError, "X values must be in [0, X_m)"
+            raise ValueError( "X values must be in [0, X_m)")
         if (self.X.shape[0] != self.X_n):
-            raise ValueError, "X.shape[0] must equal X_n"
+            raise ValueError( "X.shape[0] must equal X_n")
         if (self.Ny.size != self.Y_m):
-            raise ValueError, "Ny must contain Y_m elements"
+            raise ValueError( "Ny must contain Y_m elements")
         if (self.Ny.sum() != self.N):
-            raise ValueError, "Ny.sum() must equal number of X input trials"
+            raise ValueError( "Ny.sum() must equal number of X input trials")
 
     def _sample(self, method='naive'):
         """Sample probabilities of system.
@@ -733,13 +733,13 @@ class SortedDiscreteSystem(DiscreteSystem):
         if any([c in calc for c in ['HXY','HiX','HiXY','HY']]):
             self.PY = _probcount(self.Ny,self.N,method)
         if 'SiHXi' in calc:
-            for i in xrange(self.X_n):
+            for i in range(self.X_n):
                 self.PXi[:,i] = prob(self.X[i,:], self.X_m, method=method)
             
         # conditional probabilities
         if any([c in calc for c in ['HiXY','HXY','HshXY']]):
             sstart=0
-            for i in xrange(self.Y_dim):
+            for i in range(self.Y_dim):
                 send = sstart+self.Ny[i]
                 indx = slice(int(sstart),int(send))
                 sstart = send
@@ -747,17 +747,17 @@ class SortedDiscreteSystem(DiscreteSystem):
                     # output conditional ensemble
                     oce = d_X[indx]
                     if oce.size == 0:
-                        print 'Warning: Null output conditional ensemble for ' + \
-                          'output : ' + str(i)
+                        print('Warning: Null output conditional ensemble for ' + \
+                          'output : ' + str(i))
                     else:
                         self.PXY[:,i] = prob(oce, self.X_dim, method=method)
                 if any([c in calc for c in ['HiX','HiXY','HshXY']]):
-                    for j in xrange(self.X_n):
+                    for j in range(self.X_n):
                         # output conditional ensemble for a single variable
                         oce = self.X[j,indx]
                         if oce.size == 0:
-                            print 'Warning: Null independent output conditional ensemble for ' + \
-                                'output : ' + str(i) + ', variable : ' + str(j)
+                            print('Warning: Null independent output conditional ensemble for ' + \
+                                'output : ' + str(i) + ', variable : ' + str(j))
                         else:
                             self.PXiY[:,j,i] = prob(oce, self.X_m, method=method)
                             if 'HshXY' in calc:
@@ -796,7 +796,7 @@ class SortedDiscreteSystem(DiscreteSystem):
             sstart = 0
             oldX = self.X
             self.X = np.zeros_like(oldX)
-            for i in xrange(self.Y_m):
+            for i in range(self.Y_m):
                 send = sstart + int(self.Ny[i])
                 shuffle = np.random.permutation(int(self.Ny[i]))
                 self.X[:,sstart:send] = oldX[:,sstart+shuffle]
@@ -815,7 +815,7 @@ class SortedDiscreteSystem(DiscreteSystem):
         slices = []
         Ny_new = np.floor(self.Ny/sub[0]).astype(int)
         sstart = 0
-        for i in xrange(self.Y_m):
+        for i in range(self.Y_m):
             send = sstart + int(self.Ny[i])
             sl = slice(sstart + (sub[1] * Ny_new[i]), 
                        sstart + ((sub[1]+1) * Ny_new[i]))

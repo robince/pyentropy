@@ -59,12 +59,12 @@ response word using base2dec, dec2base. The output is in the same format.
 import time
 import os
 import sys
-import cPickle
 import numpy as np
 import scipy as sp
 import scipy.io as sio
 import scipy.sparse as sparse
 import scipy.optimize as opt
+import configparser
 # umfpack disabled due to bug in scipy
 # http://mail.scipy.org/pipermail/scipy-user/2009-December/023625.html
 #try:
@@ -75,14 +75,13 @@ import scipy.optimize as opt
 HAS_UMFPACK = False
 from scipy.sparse.linalg import spsolve, use_solver
 use_solver(useUmfpack=False)
-from utils import dec2base, base2dec
-import ConfigParser
+from pyentropy.utils import dec2base, base2dec
+
 
 def get_config_file():
     """Get the location and name of the config file for specifying
     the data cache dir. You can call this to find out where to put your
     config.
-
     """
     if sys.platform.startswith('win'):
         cfname = '~/pyentropy.cfg'
@@ -98,20 +97,19 @@ def get_data_dir():
     else:
         dirname = '~/.pyentropy'
     # try to load user override
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     cf = config.read(get_config_file())
     try:
         data_dir = os.path.expanduser(config.get('maxent','cache_dir'))
-    except (ConfigParser.NoSectionError, ConfigParser.NoOptionError):
+    except (configparser.NoSectionError, configparser.NoOptionError):
         data_dir = os.path.expanduser(dirname)
-
     # check directory exists
     if not os.path.isdir(data_dir):
         try:
             os.mkdir(data_dir)
         except:
-            print "ERROR: could not create data dir. Please check your " + \
-                  "configuration."
+            print("ERROR: could not create data dir. Please check your " + \
+                  "configuration.")
             raise
     return data_dir
 
@@ -188,14 +186,14 @@ class AmariSolve:
             self.A = loaddict['A'].tocsc()
             self.order_idx = loaddict['order_idx'].squeeze()
         elif confirm:
-            inkey = raw_input("Existing .mat file not found..." +
+            inkey = input("Existing .mat file not found..." +
                               "Generate matrix? (y/n)")
             if inkey == 'y':
                 # else call matrix generation function (and save)
                 self._generate_matrix()
             else:
-                print "File not found and generation aborted..."
-                print "Do not use this class instance."
+                print("File not found and generation aborted...")
+                print("Do not use this class instance.")
                 return None
         else:
             # just generate it without confirmation
@@ -223,8 +221,8 @@ class AmariSolve:
         self.order_length    = np.zeros(n+1, dtype=int)
         self.row_counter     = 0
 
-        for ordi in xrange(n+1):    
-            self.order_length[ordi] = (sp.misc.comb(n, ordi+1, exact=1) *
+        for ordi in range(n+1):
+            self.order_length[ordi] = (sp.special.comb(n, ordi+1, exact=1) *
                                         ((m-1)**(ordi+1)))
             self.order_idx[ordi] = self.row_counter
             self.row_counter += self.order_length[ordi]
@@ -250,11 +248,11 @@ class AmariSolve:
         self.A = sparse.dok_matrix((self.order_idx[k],dim))
 
         self.row_counter = 0
-        for ordi in xrange(k):
+        for ordi in range(k):
             self.nterms = m**(n - (ordi+1))
             self.terms = dec2base(np.c_[0:self.nterms,], m, n-(ordi+1))
             self._recloop((ordi+1), 1, [], [], n, m)
-            print "Order " + str(ordi+1) + " complete. Time: " + time.ctime()
+            print("Order " + str(ordi+1) + " complete. Time: " + time.ctime())
 
         # save matrix to file
         self.A = self.A.tocsc()
@@ -274,12 +272,12 @@ class AmariSolve:
             pos_start = pos[-1] + 1
 
         # loop over alphabet
-        for ai in xrange(1, m):
+        for ai in range(1, m):
             alpha_new = list(alpha)
             alpha_new.append(ai)
 
             # loop over position
-            for pi in xrange(pos_start, (n-(order-depth))):
+            for pi in range(pos_start, (n-(order-depth))):
                 pos_new = list(pos)
                 pos_new.append(pi)
 
@@ -294,7 +292,7 @@ class AmariSolve:
                         # add columns (insert and add to sparse)
                         ins = np.tile(alpha_new,(blocksize,1))
                         temp = terms
-                        for coli in xrange(order):
+                        for coli in range(order):
                             temp = inscol(temp, np.array(ins[:,coli],ndmin=2).T, pos_new[coli])
 
                         cols = (base2dec(temp,m)-1).tolist()
@@ -329,19 +327,19 @@ class AmariSolve:
 
         """
         if len(Pr.shape) != 1:
-            raise ValueError, "Input Pr should be a 1D array"
+            raise ValueError("Input Pr should be a 1D array")
         if not eta_given and Pr.size != self.fdim:
-            raise ValueError, "Input probability vector must have length fdim (m^n)"
+            raise ValueError("Input probability vector must have length fdim (m^n)")
 
         l = self.order_idx[k].astype(int)
         if eta_given:
             if Pr.size < l:
-                raise ValueError, "Input eta vector must have at least %i entries" % l
+                raise ValueError("Input eta vector must have at least %i entries" % l)
         else:
             if Pr.size != self.fdim:
-                raise ValueError, "Input probability vector must have length fdim (m^n)"
+                raise ValueError("Input probability vector must have length fdim (m^n)")
             if not np.allclose(Pr.sum(), 1.0):
-                raise ValueError, "Input probability vector must sum to 1"
+                raise ValueError("Input probability vector must sum to 1")
 
 
         # initial conditions from 1st distribution 
@@ -375,15 +373,15 @@ class AmariSolve:
                 #full_output=1)
         the_k = self.optout[0]
 
-        print "order: " + str(k) + \
-                " ierr: " + str(self.optout[2]) + " - " + self.optout[3]
-        print "fval: " + str(np.mean(np.abs(self.optout[1]['fvec']))),
+        print("order: " + str(k) + \
+                " ierr: " + str(self.optout[2]) + " - " + self.optout[3])
+        print("fval: " + str(np.mean(np.abs(self.optout[1]['fvec']))),)
         # extra debug info for jacobian 
-        print "nfev: %d" % self.optout[1]['nfev'],
+        print("nfev: %d" % self.optout[1]['nfev'],)
         try:
-            print "njev: %d" % self.optout[1]['njev']
+            print("njev: %d" % self.optout[1]['njev'])
         except KeyError:
-            print ""
+            print("")
         Psolve = np.zeros(self.fdim)
         Psolve[1:] = self._p_from_theta(np.r_[the_k,theta0])
         Psolve[0] = 1.0 - Psolve.sum()
@@ -457,7 +455,7 @@ def inscol(x,h,n):
 def order1direct(p,a):
     """Compute first order solution directly for testing"""
     if p.size != a.fdim:
-        raise ValueError, "Probability vector doesn't match a.fdim"
+        raise ValueError("Probability vector doesn't match a.fdim")
 
     # 1st order marginals
     marg = a.eta_from_p(p)[:a.order_idx[1]]
