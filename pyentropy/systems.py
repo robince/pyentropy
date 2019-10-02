@@ -162,12 +162,12 @@ class BaseSystem:
 
         """
         if method == 'nsb-ext':
-            from utils import nsb_entropy as entropy_fun
+            from pyentropy.utils import nsb_entropy as entropy_fun
         elif method == 'nsb':
             # don't catch exceptions - just fail if can't import
-            from statk.wrap import nsb_entropy as entropy_fun
+            from pyentropy.statk.wrap import nsb_entropy as entropy_fun
         elif method == 'bub':
-            from statk.wrap import bub_entropy as entropy_fun
+            from pyentropy.statk.wrap import bub_entropy as entropy_fun
         else:
             raise ValueError("Unknown external entropy method %s in _calc_external"%method)
             

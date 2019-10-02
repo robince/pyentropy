@@ -187,7 +187,7 @@ class AmariSolve:
             self.A = loaddict['A'].tocsc()
             self.order_idx = loaddict['order_idx'].squeeze()
         elif confirm:
-            inkey = raw_input("Existing .mat file not found..." +
+            inkey = input("Existing .mat file not found..." +
                               "Generate matrix? (y/n)")
             if inkey == 'y':
                 # else call matrix generation function (and save)
@@ -223,7 +223,7 @@ class AmariSolve:
         self.row_counter     = 0
 
         for ordi in range(n+1):
-            self.order_length[ordi] = (sp.misc.comb(n, ordi+1, exact=1) *
+            self.order_length[ordi] = (sp.special.comb(n, ordi+1, exact=1) *
                                         ((m-1)**(ordi+1)))
             self.order_idx[ordi] = self.row_counter
             self.row_counter += self.order_length[ordi]

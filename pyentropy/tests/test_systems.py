@@ -18,6 +18,7 @@
 from copy import copy
 import numpy as np
 from numpy.testing import *
+from numpy.testing import dec
 from nose.tools import with_setup
 from pyentropy import DiscreteSystem, SortedDiscreteSystem
 import subprocess, os
