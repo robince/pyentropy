@@ -332,9 +332,11 @@ class AmariSolve:
             raise ValueError, "Input Pr should be a 1D array"
         if not eta_given and Pr.size != self.fdim:
             raise ValueError, "Input probability vector must have length fdim (m^n)"
+
+        l = self.order_idx[k].astype(int)
         if eta_given:
-            if Pr.size != self.dim:
-                raise ValueError, "Input eta vector must have length dim (m^n -1)"
+            if Pr.size < l:
+                raise ValueError, "Input eta vector must have at least %i entries" % l
         else:
             if Pr.size != self.fdim:
                 raise ValueError, "Input probability vector must have length fdim (m^n)"
@@ -342,9 +344,15 @@ class AmariSolve:
                 raise ValueError, "Input probability vector must sum to 1"
 
 
-        l       = self.order_idx[k].astype(int)
+        # initial conditions from 1st distribution 
+        if not eta_given:
+            p1 = order1direct(Pr, self)
+            theta1 = self.theta_from_p(p1)
+            x0 = theta1[:l] + ic_offset
+        else:
+            x0 = np.zeros(l)+ic_offset 
+
         theta0  = np.zeros(self.order_idx[-1]-self.order_idx[k]-1)
-        x0      = np.zeros(l)+ic_offset 
         sf      = self._solvefunc
 
         jacobian = kwargs.get('jacobian',True)
