@@ -24,7 +24,7 @@ http://code.google.com/p/pyentropy
 """
 
 __author__ = 'Robin Ince'
-__version__ = '0.5.0dev'
+__version__ = '0.5.0'
 
 from pyentropy.systems import DiscreteSystem, SortedDiscreteSystem
 from pyentropy.utils import (prob, decimalise, nsb_entropy, quantise,
