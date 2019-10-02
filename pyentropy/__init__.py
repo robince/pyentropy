@@ -26,8 +26,8 @@ http://code.google.com/p/pyentropy
 __author__ = 'Robin Ince'
 __version__ = '0.5.0dev'
 
-from systems import DiscreteSystem, SortedDiscreteSystem
-from utils import (prob, decimalise, nsb_entropy, quantise,
+from pyentropy.systems import DiscreteSystem, SortedDiscreteSystem
+from pyentropy.utils import (prob, decimalise, nsb_entropy, quantise,
                              dec2base, base2dec, quantise_discrete)
 
 from numpy.testing import Tester
