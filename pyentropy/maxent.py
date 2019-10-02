@@ -59,7 +59,6 @@ response word using base2dec, dec2base. The output is in the same format.
 import time
 import os
 import sys
-import _pickle as cPickle
 import numpy as np
 import scipy as sp
 import scipy.io as sio
